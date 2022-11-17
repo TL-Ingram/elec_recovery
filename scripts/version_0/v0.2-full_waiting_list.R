@@ -21,7 +21,7 @@ specialty_name = "Cardiology"
   print(paste0("Initialisation date is ", init_date))
 
 # Set end date
-  end_date = as.Date("2023-05-01")
+  end_date = as.Date("2025-05-01")
   print(paste0("End date is ", end_date))
 
 # Calculate Horizon Length
@@ -263,7 +263,7 @@ times_to_planned_spec <-
     
     res.sum$date <- as.character(init_date + res.sum$day, format = "%d/%m/%Y")
     res.sum$specialty = specialty_name # comment to show full wl forecast
-    res.sum$division  = division_name # comment to show full wl forecast
+    # res.sum$division  = division_name # comment to show full wl forecast
     res.sum$model    = "interactive_rates"
     
     # Write to table
@@ -323,7 +323,7 @@ times_to_planned_spec <-
     }
     
     results$specialty = specialty_name
-    results$division  = division_name
+    # results$division  = division_name
     results$model    = "interactive_rates"
     
     
