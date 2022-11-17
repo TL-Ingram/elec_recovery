@@ -1,8 +1,8 @@
-qlik_interactive_model <- function(q, specialty_name, division_name){
+qlik_interactive_model <- function(q, specialty_name, division_name)
 # packages ---------------------------------------------------------------------
 # librarian::lib_startup("librarian", global = FALSE)
 # library(librarian)
-shelf(tidyverse, here, timeDate, parallel, lubridate)
+shelf(tidyverse, here, timeDate, parallel, lubridate, odbc)
 # library(parallel)
 # library(dplyr)
 # library(ggplot2)
@@ -203,7 +203,7 @@ times_to_planned_spec <-
       priority %in% c("Unknown", "Planned", "Priority 2", "Priority 3", "Priority 4")
     )[c("priority", "value")]%>%
     full_join(data.frame(priority = c("Priority 2","Priority 3", "Priority 4", "Unknown", "Planned"))) %>%
-    mutate(value = ifelse(is.na(value), 0, value))#P2,P3,P4
+    mutate(value = ifelse(is.na(value), 0, value))
   
   
   
@@ -211,9 +211,9 @@ times_to_planned_spec <-
   #### Run the Simulation #####
   #############################
   
-  if(dim(wl)[1] != 0){
+  if(dim(wl)[1] != 0)
     
-  
+
     
     res <- data.frame(
       id = 1:dim(wl)[1],
@@ -235,7 +235,7 @@ times_to_planned_spec <-
     
     
     print(paste0("Number of runs is ", n.runs))
-    
+
     print(paste0("Setting up the cluster..."))
     cl<-makeCluster(8)
     print(paste0("Made cluster..."))
