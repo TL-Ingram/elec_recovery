@@ -306,4 +306,4 @@ if(type == "current_rates")
   write_rds(res.sum, paste0(here("rds", "res_sum", specialty_name), ".rds"))
   print(results)
 }
-test(q, "Cardiology")
+test(q, "Trauma & Orthopaedics")
