@@ -1,4 +1,19 @@
-test <- function(q, specialty_name){
+# specialty <- c("Urology", "Cardiology", "Trauma & Orthopaedics", 
+#                "Ophthalmology",
+#                "Colorectal Surgery", "Gastroenterology", "Pain Management", 
+#                "Rheumatology",
+#                "Haematology", "Oral Surgery", "General Surgery", 
+#                "Vascular Surgery", "Endocrinology and Metabolic Medicine",
+#                "General Medicine", "Gynaecology", "Elderly Medicine", 
+#                "Thoracic Medicine", "Plastic Surgery", "ENT", "Breast Surgery", 
+#                "Paediatric Dentistry")
+specialty <- q %>%
+  distinct(specialty) %>%
+  pull(specialty)
+
+# specialty_name = "Urology"
+# test <- function(q, specialty_name)
+for (specialty_name in specialty)
 # packages ---------------------------------------------------------------------
 # librarian::lib_startup("librarian", global = FALSE)
 # library(librarian)
@@ -14,6 +29,8 @@ source("db_connect_functions.R")
 source("simulation_function.R")
 source("helper_functions.R")
 
+  
+
 
 # load data --------------------------------------------------------------------
 load(here("data", "Current_Waiting_List.RData"))
@@ -21,7 +38,7 @@ init_date <- as.Date(max(q$decision_to_admit_date_dt), origin = "1900-01-01") - 
 print(paste0("Initialisation date is ", init_date))
 
 # Set end date
-end_date = as.Date("2023-05-01")
+end_date = as.Date("2024-01-01")
 print(paste0("End date is ", end_date))
 
 # Calculate Horizon Length
@@ -66,8 +83,8 @@ wl$priority  = ifelse(
   wl$current_wl_priority %in% c(8, 9),
   'Deferred',
   ifelse(
-    wl$current_wl_priority %in% c('1', '2'),
-    'Priority 2',
+    wl$current_wl_priority %in% c('1', '2', '3', '4'),
+    'Priority',
     ifelse(
       wl$current_wl_priority %in% c('Unknown', '7'),
       'Unknown',
@@ -102,7 +119,7 @@ wl$planned_admission_date = as.Date(
   origin = "1970-01-01"
 )
 
-print(paste0("Waiting list has been formatted."))
+print(paste0("Waiting list has been formatted for ", specialty_name))
 
 # ------------------------------------------------------------------------------
 
@@ -262,8 +279,6 @@ if(type == "current_rates")
   res.sum <- filter(res.sum, !is.na(mean))
   res.sum$specialty = specialty_name
   
-  print(paste0("Printing any caught errors: ", tryWriteResults[1]))
-  
   
   print(paste0("Calculating clearance times... "))
   # Calculate clearence times
@@ -303,7 +318,9 @@ if(type == "current_rates")
   print(paste0("Removing old clearance times..."))
   results <- pivot_wider(results, names_from = quantile, values_from = date)
   
-  write_rds(res.sum, paste0(here("rds", "res_sum", specialty_name), ".rds"))
+  write_rds(res.sum, paste0(here("rds", "forecast_horizon", specialty_name), ".rds"))
+  write_rds(results, paste0(here("rds", "clearance_times", specialty_name), ".rds"))
+  
   print(results)
 }
-test(q, "Trauma & Orthopaedics")
+# test(q, "Trauma & Orthopaedics")
