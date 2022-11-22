@@ -58,6 +58,9 @@ simfn <-
       rtt_nwm52_Deferred = length(which(
         -res$time_arr > 364 & res$priority_definition ==  "Deferred"
       )),
+      rtt_nwm78_total = length(which(
+        -res$time_arr > 546
+      )),
       rtt_nwm4_P2 = length(which(
         -res$time_arr > 28 & res$priority_definition == "Priority 2"
       )),
@@ -417,6 +420,9 @@ simfn <-
             )),
             rtt_nwm52_Deferred = length(which(
               (d - res$time_arr) > 364 & res$priority_definition ==  "Deferred"
+            )),
+            rtt_nwm78_total = length(which(
+              (d - res$time_arr) > 546
             )),
             rtt_nwm4_P2 = length(which(
               (d - res$time_arr) > 28 & res$priority_definition == "Priority 2"

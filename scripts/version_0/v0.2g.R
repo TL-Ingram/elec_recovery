@@ -1,16 +1,31 @@
 # graphing full wl
 
 source(here("scripts", "version_0", "v0.2-full_waiting_list.R"))
-data <- read_rds(here("rds", "res_sum", "Trauma & Orthopaedics.rds"))
-horizon_wl <- data %>%
+data <- read_rds(here("rds", "forecast_horizon", "Ophthalmology.rds"))
+
+a_data <- list.files(path = here("rds", "forecast_horizon"), pattern = "*.rds") %>%
+  map_dfr(read_rds) #%>% 
+  bind_rows()
+getwd() 
+setwd("C:/R_projects/elec_recovery/rds/forecast_horizon/")
+horizon_wl <- a_data %>%
   mutate(date = dmy(date)) %>%
   select(metric,
          mean,
-         date)
+         date,
+         specialty) %>%
+  filter(!grepl("act", metric)) %>%
+  filter(!grepl("rtt_m", metric)) %>%
+  filter(!grepl("rtt_n", metric)) %>%
+  filter(!grepl("nwl", metric))
 
-ggplot(horizon_wl, aes(x = date, y = mean, colour = metric)) +
+a_horizon <- ggplot(horizon_wl, aes(x = date, y = mean, colour = metric)) +
   geom_line() +
-  theme_bw()
+  theme_bw() +
+  facet_wrap(. ~ specialty, scales = "fixed") +
+  ggsave(here("plots", "speciality_horizon_fixed_y.jpg"), width = 20, height = 20, dpi = 300)
+
+?facet_wrap
 
 # show only 104 weeks
 # show only 52 weeks

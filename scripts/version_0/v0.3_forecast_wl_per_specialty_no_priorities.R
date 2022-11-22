@@ -10,10 +10,10 @@
 specialty <- q %>%
   distinct(specialty) %>%
   pull(specialty)
-
-# specialty_name = "Urology"
+# setwd("C:/R_projects/elec_recovery")
+# specialty_name = "Ophthalmology"
 # test <- function(q, specialty_name)
-for (specialty_name in specialty)
+for (specialty_name in specialty) {
 # packages ---------------------------------------------------------------------
 # librarian::lib_startup("librarian", global = FALSE)
 # library(librarian)
@@ -30,7 +30,6 @@ source("simulation_function.R")
 source("helper_functions.R")
 
   
-
 
 # load data --------------------------------------------------------------------
 load(here("data", "Current_Waiting_List.RData"))
@@ -240,8 +239,8 @@ if(type == "current_rates")
   initial.waiting.list<-dim(res)[1]
   print(paste0("The initial waiting list size is of length ", initial.waiting.list))
   
-  n.runs <- 1 # number of runs of the simulation
-  warm.up.period <- 0 # warm up period (discarded)
+  n.runs <- 10 # number of runs of the simulation
+  warm.up.period <- 1 # warm up period (discarded)
   
   
   print(paste0("Number of runs is ", n.runs))
@@ -267,17 +266,36 @@ if(type == "current_rates")
   #################
   
   res.sum<-res %>%
+    mutate(nwl52_total = rowSums(select(., contains('nwl52'))),
+           nwm52_total = rowSums(select(., contains('nwm52'))),
+           nwm4_total = rowSums(select(., contains('nwm4'))),
+           nwm13_total = rowSums(select(., contains('nwm13'))),
+           nwm104_total = rowSums(select(., contains('nwm104'))),
+           nwl104_total = rowSums(select(., contains('nwl104'))),
+           nwm78_total = rtt_nwm78_total) %>%
+    select(-c(2:10, 12:18)) %>%
+    select(-c(3,4,5,6,7)) %>%
+    select(-c(10,11)) %>%
     pivot_longer(cols=-c(day,ref),names_to="metric",values_to="value") %>%
     group_by(day,metric) %>%
     summarise(mean=mean(value, na.rm=T),q025=quantile(value,0.05,na.rm=TRUE),q975=quantile(value,0.95,na.rm=TRUE))
   
   res.sum$date <- as.character(init_date + res.sum$day, format = "%d/%m/%Y")
   res.sum$model    = "current_rates"
+
+# overall, not priorities
+# remove more than 4 and 13
+# wl_size, not planned or deferred
+# group of more than 78 as well. This is a big one
+# interactivity to modify admissions, 
+# clearance not work
   
   # Write to table
   # Convert doubles to floats
   res.sum <- filter(res.sum, !is.na(mean))
   res.sum$specialty = specialty_name
+           
+           
   
   
   print(paste0("Calculating clearance times... "))
@@ -305,7 +323,7 @@ if(type == "current_rates")
     return(results[-1,])
   }
   
-  clear_metrics <- c("rtt_nwm4_P2","rtt_nwm13_P3","rtt_nwm52_P2","rtt_nwm52_P3","rtt_nwm52_P4","rtt_nwm52_Unknown","rtt_nwm104_P2","rtt_nwm104_P3","rtt_nwm104_P4","rtt_nwm104_Unknown")
+  clear_metrics <- c("rtt_nwm52_total","rtt_nwm104_total")
   
   
   results <- get_clear(data = res.sum, metric_name = clear_metrics[1])
@@ -319,8 +337,10 @@ if(type == "current_rates")
   results <- pivot_wider(results, names_from = quantile, values_from = date)
   
   write_rds(res.sum, paste0(here("rds", "forecast_horizon", specialty_name), ".rds"))
+  write_csv(res.sum, paste0(here("csv", "forecast_horizon", specialty_name), ".csv"))
   write_rds(results, paste0(here("rds", "clearance_times", specialty_name), ".rds"))
   
   print(results)
+
 }
 # test(q, "Trauma & Orthopaedics")
