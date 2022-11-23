@@ -43,3 +43,20 @@ wl %>%
 # do current waiting list size and change since historic
 # do clearance times with graphs for each specialty
 
+f_data <- read_rds(here("rds", "forecast_horizon_FULL_WL.rds"))
+horizon_wl <- f_data %>%
+  mutate(date = dmy(date)) %>%
+  select(metric,
+         mean,
+         date) %>%
+  filter(!grepl("act", metric)) %>%
+  filter(!grepl("rtt_m", metric)) %>%
+  filter(!grepl("rtt_n", metric)) %>%
+  filter(!grepl("nwl", metric)) %>%
+  filter(!grepl(""))
+
+f_horizon <- ggplot(horizon_wl, aes(x = date, y = mean, colour = metric)) +
+  geom_line() +
+  theme_bw() #+
+  # facet_wrap(. ~ specialty, scales = "fixed")
+f_horizon
