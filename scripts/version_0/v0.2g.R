@@ -8,7 +8,7 @@ a_data <- list.files(path = here("rds", "forecast_horizon"), pattern = "*.rds") 
   bind_rows()
 getwd() 
 setwd("C:/R_projects/elec_recovery/rds/forecast_horizon/")
-horizon_wl <- a_data %>%
+horizon_wl <- data %>%
   mutate(date = dmy(date)) %>%
   select(metric,
          mean,
@@ -22,9 +22,9 @@ horizon_wl <- a_data %>%
 a_horizon <- ggplot(horizon_wl, aes(x = date, y = mean, colour = metric)) +
   geom_line() +
   theme_bw() +
-  facet_wrap(. ~ specialty, scales = "fixed") +
-  ggsave(here("plots", "speciality_horizon_fixed_y.jpg"), width = 20, height = 20, dpi = 300)
-
+  facet_wrap(. ~ specialty, scales = "fixed") #+
+  #ggsave(here("plots", "speciality_horizon_fixed_y.jpg"), width = 20, height = 20, dpi = 300)
+a_horizon
 ?facet_wrap
 
 # show only 104 weeks

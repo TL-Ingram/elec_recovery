@@ -11,7 +11,7 @@ specialty <- q %>%
   distinct(specialty) %>%
   pull(specialty)
 # setwd("C:/R_projects/elec_recovery")
-# specialty_name = "Ophthalmology"
+specialty_name = "Cardiology"
 # specialty_name = "Trauma & Orthopaedics"
 # test <- function(q, specialty_name)
 for (specialty_name in specialty) {
@@ -34,7 +34,7 @@ source("helper_functions.R")
 
 # load data --------------------------------------------------------------------
 load(here("data", "Current_Waiting_List.RData"))
-init_date <- as.Date(max(q$decision_to_admit_date_dt), origin = "1900-01-01") - 50
+init_date <- as.Date(max(q$decision_to_admit_date_dt), origin = "1900-01-01") - 2
 print(paste0("Initialisation date is ", init_date))
 
 # Set end date

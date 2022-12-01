@@ -1,0 +1,262 @@
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Accident and Emergency"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Breast Surgery"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Cardiology"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Colorectal Surgery"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Elderly Medicine"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Endocrinology and Metabolic Medicine"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: ENT"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Gastroenterology"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: General Medicine"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: General Surgery"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Gynaecology"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Haematology"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Medical Oncology"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Nephrology"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Neurology"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Obstetrics"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Ophthalmology"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Oral Surgery"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Orthoptics"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Paediatric Dentistry"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Paediatric Trauma And Orthopaedics"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Paediatrics"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Pain Management"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Plastic Surgery"
+`summarise()` has grouped output by 'internal_number', 'pathway_number',
+'dta_date', 'Admis_Method_Desc', 'covid_recovery_priority',
+'clock_start_date', 'clock_stop_date', 'days_to_dta'. You can override
+using the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+Error: nanodbc/nanodbc.cpp:1021: HYT00: [Microsoft][ODBC SQL Server Driver]Login timeout expired 
+In addition: There were 24 warnings (use warnings() to see them)
+Error in UseMethod("distinct") : 
+  no applicable method for 'distinct' applied to an object of class "function"
+[1] "Initialisation date is 2022-09-27"
+[1] "End date is 2024-01-01"
+[1] "Horizon length is  461"
+[1] "Parameters have been loaded."
+[1] "Times to DTA have been loaded."
+[1] "Times to planned have been loaded."
+[1] "Waiting list has been formatted for Ophthalmology"
+[1] "The current_rates model has been selected."
+[1] "Capacity is 2.96551724137931"
+Joining, by = "priority"
+[1] "Demand is 5.03448275862069"
+Joining, by = "priority"
+[1] "The initial waiting list size is of length 604"
+[1] "Number of runs is 1"
+[1] "Setting up the cluster..."
+[1] "Made cluster..."
+[1] "Exported to cluster..."
+[[1]]
+[1] "dplyr"     "librarian" "stats"     "graphics"  "grDevices"
+[6] "datasets"  "utils"     "methods"   "base"     
+
+[[2]]
+[1] "dplyr"     "librarian" "stats"     "graphics"  "grDevices"
+[6] "datasets"  "utils"     "methods"   "base"     
+
+[[3]]
+[1] "dplyr"     "librarian" "stats"     "graphics"  "grDevices"
+[6] "datasets"  "utils"     "methods"   "base"     
+
+[[4]]
+[1] "dplyr"     "librarian" "stats"     "graphics"  "grDevices"
+[6] "datasets"  "utils"     "methods"   "base"     
+
+[[5]]
+[1] "dplyr"     "librarian" "stats"     "graphics"  "grDevices"
+[6] "datasets"  "utils"     "methods"   "base"     
+
+[[6]]
+[1] "dplyr"     "librarian" "stats"     "graphics"  "grDevices"
+[6] "datasets"  "utils"     "methods"   "base"     
+
+[[7]]
+[1] "dplyr"     "librarian" "stats"     "graphics"  "grDevices"
+[6] "datasets"  "utils"     "methods"   "base"     
+
+[[8]]
+[1] "dplyr"     "librarian" "stats"     "graphics"  "grDevices"
+[6] "datasets"  "utils"     "methods"   "base"     
+
+[1] "Evaluated dplyr on cluster..."
+Error in argfun(start + i - 1L) : object 'simfn' not found
+[1] "Calculating clearance times... "
+Error in filter(data, metric == metric_name) : object 'res.sum' not found
+Error in rbind(results, get_clear(data = res.sum, metric_name = metric)) : 
+  object 'results' not found
+[1] "Removing old clearance times..."
+Error in pivot_wider(results, names_from = quantile, values_from = date) : 
+  object 'results' not found
+Error in print(results) : object 'results' not found
