@@ -266,6 +266,8 @@ if(type == "current_rates")
   ### OUTPUTS #####
   #################
   
+  res %>% mutate(rowSum(grepl("nwl52"), )
+  
   res.sum<-res %>%
     pivot_longer(cols=-c(day,ref),names_to="metric",values_to="value") %>%
     group_by(day,metric) %>%

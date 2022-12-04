@@ -11,8 +11,8 @@ specialty <- q %>%
   distinct(specialty) %>%
   pull(specialty)
 # setwd("C:/R_projects/elec_recovery")
-specialty_name = "Cardiology"
-# specialty_name = "Trauma & Orthopaedics"
+specialty_name = "Pain Management"
+specialty_name = "Trauma & Orthopaedics"
 # test <- function(q, specialty_name)
 for (specialty_name in specialty) {
 # packages ---------------------------------------------------------------------
@@ -83,8 +83,8 @@ wl$priority  = ifelse(
   wl$current_wl_priority %in% c(8, 9),
   'Deferred',
   ifelse(
-    wl$current_wl_priority %in% c('1', '2', '3', '4'),
-    'Priority',
+    wl$current_wl_priority %in% c('1', '2'),
+    'Priority 2',
     ifelse(
       wl$current_wl_priority %in% c('Unknown', '7'),
       'Unknown',
@@ -130,8 +130,8 @@ type = c("current_rates")
 print(paste0("The ", type, " model has been selected."))
 if(type == "current_rates")
 
-  
-  
+
+
   ################
   # Times to DTA
   ###############
@@ -273,10 +273,9 @@ if(type == "current_rates")
            nwm13_total = rowSums(select(., contains('nwm13'))),
            nwm104_total = rowSums(select(., contains('nwm104'))),
            nwl104_total = rowSums(select(., contains('nwl104'))),
-           nwm78_total = rtt_nwm78_total) %>%
-    select(-c(2:10, 12:18)) %>%
-    select(-c(3,4,5,6,7)) %>%
-    select(-c(10,11)) %>%
+           nwm78_total = rtt_nwm78_total,
+           wl_size_active = wl_size - wl_Planned - wl_Deferred) %>%
+    select(-c(2:18, 21:27, 31:32)) %>%
     pivot_longer(cols=-c(day,ref),names_to="metric",values_to="value") %>%
     group_by(day,metric) %>%
     summarise(mean=mean(value, na.rm=T),q025=quantile(value,0.05,na.rm=TRUE),q975=quantile(value,0.95,na.rm=TRUE))
@@ -331,7 +330,9 @@ if(type == "current_rates")
   for(metric in clear_metrics[-1]){
     results <- rbind(results, get_clear(data = res.sum, metric_name = metric))
   }
-
+  
+  
+  
   # Write to table
   print(paste0("Removing old clearance times..."))
   results <- pivot_wider(results, names_from = quantile, values_from = date)
