@@ -1,0 +1,274 @@
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Accident and Emergency"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Breast Surgery"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Cardiology"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Colorectal Surgery"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Elderly Medicine"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Endocrinology and Metabolic Medicine"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: ENT"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Gastroenterology"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: General Medicine"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: General Surgery"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Gynaecology"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Haematology"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Medical Oncology"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Nephrology"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Neurology"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Obstetrics"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Ophthalmology"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Oral Surgery"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Orthoptics"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Paediatric Dentistry"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Paediatric Trauma And Orthopaedics"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Paediatrics"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Pain Management"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Plastic Surgery"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Rheumatology"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Thoracic Medicine"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Trauma & Orthopaedics"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Upper Gastrointestinal Surgery"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Urology"
+`summarise()` has grouped output by 'internal_number',
+'pathway_number', 'dta_date', 'Admis_Method_Desc',
+'covid_recovery_priority', 'clock_start_date',
+'clock_stop_date', 'days_to_dta'. You can override using
+the `.groups` argument.
+Joining, by = "dt"
+Joining, by = "dt"
+Joining, by = "dt"
+[1] "Parameters updated for: Vascular Surgery"
+There were 24 warnings (use warnings() to see them)
+data frame with 0 columns and 0 rows
+data frame with 0 columns and 0 rows
+data frame with 0 columns and 0 rows

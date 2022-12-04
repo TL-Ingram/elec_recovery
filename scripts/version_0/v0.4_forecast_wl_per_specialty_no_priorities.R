@@ -10,8 +10,8 @@
 specialty <- q %>%
   distinct(specialty) %>%
   pull(specialty)
-# setwd("C:/R_projects/elec_recovery")
-specialty_name = "Pain Management"
+setwd("C:/R_projects/elec_recovery")
+specialty_name = "Colorectal Surgery"
 specialty_name = "Trauma & Orthopaedics"
 # test <- function(q, specialty_name)
 for (specialty_name in specialty) {

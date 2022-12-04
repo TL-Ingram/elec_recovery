@@ -1,7 +1,7 @@
 # graphing full wl
 
 source(here("scripts", "version_0", "v0.2-full_waiting_list.R"))
-a_data <- read_rds(here("rds", "forecast_horizon", "Pain Management.rds"))
+a_data <- read_rds(here("rds", "forecast_horizon", "Colorectal Surgery.rds"))
 
 a_data <- list.files(path = here("rds", "forecast_horizon"), pattern = "*.rds") %>%
   map_dfr(read_rds) #%>% 
@@ -24,7 +24,8 @@ horizon_wl <- a_data %>%
 a_horizon <- ggplot(horizon_wl, aes(x = date, y = mean, colour = metric)) +
   geom_line() +
   theme_bw() +
-  facet_wrap(. ~ specialty, scales = "free_y")
+  facet_wrap(. ~ specialty, scales = "free_y") +
+  labs(y = "patients")
 ggsave(here("plots", "speciality_horizon_free_y.jpg"), width = 15, height = 15, dpi = 300)
 a_horizon
 ?facet_wrap

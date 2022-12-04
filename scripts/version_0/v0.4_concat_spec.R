@@ -25,7 +25,7 @@ waiting_list_only <- horizon_wl_all %>%
   geom_area(aes(fill = metric), alpha = 0.8) +
   scale_fill_manual(values = c("darkblue", "steelblue", "lightblue")) +
   theme_ipsum_pub()
-# ggsave(here("plots", "wl_all_concat.jpg"), width = 6, height = 6, dpi = 300)
+ggsave(here("plots", "wl_all_concat.jpg"), width = 6, height = 6, dpi = 300)
 waiting_list_only
 # change date start to actual date (Nov 14th 2022)
 

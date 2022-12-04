@@ -25,15 +25,15 @@ divisions = specialty_names$division
 
 ###### PARAMS #####
 if (complete_update) {
-  date_from = c(Sys.Date() - 28 - 3,
+  date_from = c(Sys.Date() - 84 - 3,
                 seq(
-                  from = as.Date("2022-08-01"),
-                  to =  as.Date("2025-10-01"),
+                  from = as.Date("2022-01-01"),
+                  to =  as.Date("2023-12-01"),
                   by = "month"
                 ))
   date_to = c(Sys.Date() - 3, seq(
-    from = as.Date("2022-08-01"),
-    to =  as.Date("2025-10-01"),
+    from = as.Date("2022-01-01"),
+    to =  as.Date("2023-12-01"),
     by = "month"
   ) - 1)
   
@@ -42,7 +42,7 @@ if (complete_update) {
     lubridate::year(date_from[-1])
   ))
 } else{
-  date_from = c(Sys.Date() - 28 - 3)
+  date_from = c(Sys.Date() - 84 - 3)
   date_to = c(Sys.Date() - 3)
   labels = c("current")
 }
@@ -89,7 +89,7 @@ SELECT DISTINCT
 internal_number,
 MIN(i.priority_local_code) AS covid_recovery_priority
 FROM [nhs_reporting].[dbo].[reporting_Inpatient_Waiting_List] i
-where snapshot_date_dt > CAST('2022-08-01' AS DATE)
+where snapshot_date_dt > CAST('2022-01-01' AS DATE)
 GROUP BY internal_number)
 SELECT DISTINCT
 i.internal_number
@@ -193,7 +193,7 @@ AND decision_to_admit_date_dt BETWEEN CAST('",
       )
     )
     
-    if (date_from[d] >= as.Date("2022-08-01")) {
+    if (date_from[d] >= as.Date("2022-01-01")) {
       ## priorities
       total = dim(dplyr::filter(
         dtas,
@@ -375,7 +375,7 @@ SELECT DISTINCT
 internal_number,
 MIN(i.priority_local_code) AS covid_recovery_priority
 FROM [nhs_reporting].[dbo].[reporting_Inpatient_Waiting_List] i
-where snapshot_date_dt > CAST('2022-08-01' AS DATE)
+where snapshot_date_dt > CAST('2022-01-01' AS DATE)
 GROUP BY internal_number)
 SELECT DISTINCT
   i.internal_number
@@ -498,7 +498,7 @@ AND removed_date_dt BETWEEN CAST('",
     )
     
     
-    if (date_from[d] >= as.Date("2022-08-01")) {
+    if (date_from[d] >= as.Date("2022-01-01")) {
       ## adms priorities
       total = dim(dplyr::filter(
         adms,
