@@ -38,7 +38,7 @@ init_date <- as.Date(max(q$decision_to_admit_date_dt), origin = "1900-01-01") - 
 print(paste0("Initialisation date is ", init_date))
 
 # Set end date
-end_date = as.Date("2024-01-01")
+end_date = as.Date("2025-01-01")
 print(paste0("End date is ", end_date))
 
 # Calculate Horizon Length
@@ -84,7 +84,7 @@ wl$priority  = ifelse(
   'Deferred',
   ifelse(
     wl$current_wl_priority %in% c('1', '2'),
-    'Priority 2',
+    'Priority 2', # why did this change matter?
     ifelse(
       wl$current_wl_priority %in% c('Unknown', '7'),
       'Unknown',
@@ -215,7 +215,7 @@ if(type == "current_rates")
     full_join(data.frame(priority = c("Priority 2","Priority 3", "Priority 4", "Unknown", "Planned"))) %>%
     mutate(value = ifelse(is.na(value), 0, value))
   
-  
+
   
   #############################
   #### Run the Simulation #####
@@ -241,7 +241,7 @@ if(type == "current_rates")
   print(paste0("The initial waiting list size is of length ", initial.waiting.list))
   
   n.runs <- 1 # number of runs of the simulation
-  warm.up.period <- 1 # warm up period (discarded)
+  warm.up.period <- 0 # warm up period (discarded)
   
   
   print(paste0("Number of runs is ", n.runs))
