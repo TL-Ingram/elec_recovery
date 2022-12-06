@@ -58,8 +58,20 @@ simfn <-
       rtt_nwm52_Deferred = length(which(
         -res$time_arr > 364 & res$priority_definition ==  "Deferred"
       )),
-      rtt_nwm78_total = length(which(
-        -res$time_arr > 546
+      rtt_nwm78_P2 = length(which(
+        -res$time_arr > 546 & res$priority_definition == "Priority 2"
+      )),
+      rtt_nwm78_P3 = length(which(
+        -res$time_arr > 546 & res$priority_definition == "Priority 3"
+      )),
+      rtt_nwm78_P4 = length(which(
+        -res$time_arr > 546 & res$priority_definition == "Priority 4"
+      )),
+      rtt_nwm78_Unknown = length(which(
+        -res$time_arr > 546 & res$priority_definition == "Unknown"
+      )),
+      rtt_nwm78_Deferred = length(which(
+        -res$time_arr > 546 & res$priority_definition == "Deferred"
       )),
       rtt_nwm4_P2 = length(which(
         -res$time_arr > 28 & res$priority_definition == "Priority 2"
@@ -421,8 +433,20 @@ simfn <-
             rtt_nwm52_Deferred = length(which(
               (d - res$time_arr) > 364 & res$priority_definition ==  "Deferred"
             )),
-            rtt_nwm78_total = length(which(
-              (d - res$time_arr) > 546
+            rtt_nwm78_P2 = length(which(
+              (d - res$time_arr) > 546 & res$priority_definition == "Priority 2"
+            )),
+            rtt_nwm78_P3 = length(which(
+              (d - res$time_arr) > 546 & res$priority_definition == "Priority 3"
+            )),
+            rtt_nwm78_P4 = length(which(
+              (d - res$time_arr) > 546 & res$priority_definition == "Priority 4"
+            )),
+            rtt_nwm78_Unknown = length(which(
+              (d - res$time_arr) > 546 & res$priority_definition == "Unknown"
+            )),
+            rtt_nwm78_Deferred = length(which(
+              (d - res$time_arr) > 546 & res$priority_definition == "Deferred"
             )),
             rtt_nwm4_P2 = length(which(
               (d - res$time_arr) > 28 & res$priority_definition == "Priority 2"

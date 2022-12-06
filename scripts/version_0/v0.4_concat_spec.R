@@ -15,17 +15,27 @@ horizon_wl_all <- a_data %>%
   mutate(patients = sum(`mean`)) %>%
   select(-("mean")) %>%
   distinct(.) %>%
-  mutate(date = dmy(date))
+  mutate(metric = str_replace(metric, "nwm104_total", ">104"),
+         metric = str_replace(metric, "nwm78_total", ">78"),
+         metric = str_replace(metric, "nwm52_total", ">52")) %>%
+  mutate(date = dmy(date),
+         metric = factor(metric, level = c(">104", ">78", ">52", "wl_Deferred", "wl_Planned", "wl_size_active")))
+  
 # filter(!grepl("Planned", metric))
 
 waiting_list_only <- horizon_wl_all %>%
   filter(!grepl("nwl", metric),
-         !grepl("nwm", metric)) %>%
+         !grepl(">", metric)) %>%
   ggplot(aes(x = date, y = patients, fill = metric)) +
   geom_area(aes(fill = metric), alpha = 0.8) +
   scale_fill_manual(values = c("darkblue", "steelblue", "lightblue")) +
-  theme_ipsum_pub()
-ggsave(here("plots", "wl_all_concat.jpg"), width = 6, height = 6, dpi = 300)
+  theme_ipsum_pub() +
+  labs(fill = "",
+       title = "Projected number of patients on waiting list",
+       subtitle = "Inpatient waiting list only",
+       y = "Number of patients",
+       x = "")
+ggsave(here("plots", "wl_all_concat.jpg"), width = 10, height = 6, dpi = 300)
 waiting_list_only
 # change date start to actual date (Nov 14th 2022)
 
@@ -35,9 +45,14 @@ nwl_nwm <- horizon_wl_all %>%
   ggplot(aes(x = date, y = patients, fill = metric)) +
   geom_area(aes(fill = metric), alpha = 0.8) +
   scale_fill_manual(values = c("darkblue", "steelblue", "lightblue")) +
-  theme_ipsum_pub()
-ggsave(here("plots", "wl_all_nwm.jpg"), width = 6, height = 6, dpi = 300)
-# rename legend
+  theme_ipsum_pub() +
+  labs(fill = "Duration on list (weeks)",
+       title = "Projected number of patients waiting significant periods",
+       subtitle = "Inpatient waiting list only",
+       y = "Number of patients",
+       x = "")
+ggsave(here("plots", "wl_all_nwm.jpg"), width = 10, height = 6, dpi = 300)
+# rename legen
 nwl_nwm
 
 

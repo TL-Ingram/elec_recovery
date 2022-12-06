@@ -62,6 +62,11 @@ times_to_planned <-
   hsql(q_times_to_planned, db = "nhs_datascience", server = "wwldevsqlfrm1")
 print(paste0("Times to planned have been loaded."))
 
+
+
+
+
+
 ###################################
 # Set up the current waiting list #
 ###################################
@@ -273,9 +278,9 @@ if(type == "current_rates")
            nwm13_total = rowSums(select(., contains('nwm13'))),
            nwm104_total = rowSums(select(., contains('nwm104'))),
            nwl104_total = rowSums(select(., contains('nwl104'))),
-           nwm78_total = rtt_nwm78_total,
+           nwm78_total = rowSums(select(., contains('nwm78'))),
            wl_size_active = wl_size - wl_Planned - wl_Deferred) %>%
-    select(-c(2:18, 21:27, 31:32)) %>%
+    select(-c(2:22, 25:31, 33,35,36,38)) %>%
     pivot_longer(cols=-c(day,ref),names_to="metric",values_to="value") %>%
     group_by(day,metric) %>%
     summarise(mean=mean(value, na.rm=T),q025=quantile(value,0.05,na.rm=TRUE),q975=quantile(value,0.95,na.rm=TRUE))
