@@ -154,8 +154,6 @@ if(type == "current_rates")
     dplyr::filter(times_to_planned,
                   time_period == "current")
   
-  # print(paste0("Parameters have been filtered to only include ", specialty_name))
-  
   ##############
   # Capacity
   ##############
