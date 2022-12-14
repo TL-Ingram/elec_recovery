@@ -38,7 +38,7 @@ init_date <- as.Date(max(q$decision_to_admit_date_dt), origin = "1900-01-01") - 
 print(paste0("Initialisation date is ", init_date))
 
 # Set end date
-end_date = as.Date("2025-01-01")
+end_date = as.Date("2023-01-01")
 print(paste0("End date is ", end_date))
 
 # Calculate Horizon Length
@@ -243,8 +243,8 @@ if(type == "current_rates")
   initial.waiting.list<-dim(res)[1]
   print(paste0("The initial waiting list size is of length ", initial.waiting.list))
   
-  n.runs <- 1 # number of runs of the simulation
-  warm.up.period <- 0 # warm up period (discarded)
+  n.runs <- 10 # number of runs of the simulation
+  warm.up.period <- 10 # warm up period (discarded)
   
   
   print(paste0("Number of runs is ", n.runs))

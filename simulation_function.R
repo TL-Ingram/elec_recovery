@@ -4,6 +4,16 @@
 simfn <-
   function(SEED) {
     set.seed(SEED)
+    res <- data.frame(
+      id = 1:dim(wl)[1],
+      waits = as.numeric(wl$total_days_wait),
+      inpatient_waits = as.numeric(wl$days_wait),
+      priority = wl$priority,
+      priority_definition = wl$priority_definition,
+      planned  = as.numeric(wl$planned_admission_date - init_date),
+      stringsAsFactors = FALSE
+    )
+    
     #initial conditions
     initial.waiting.list <- initial.waiting.list
     demand <- demand
@@ -103,7 +113,7 @@ simfn <-
       rtt_meanwt = NA,
       rtt_medianwt = NA
     )
-    
+# THIS CODE CHUNK    
     #step through and simulate each day in considered period
     for (d in (1:nrow(rates))) {
       ################
@@ -115,9 +125,9 @@ simfn <-
       #add noise
       d_arr <- rpois(1, lambda = rate.arr)
       # add new clock starts onto the waiting list
-      if (d_arr > 0 & round(sum(demand_priority_splits$value), digits = 10) == 1.0) {
+      if (d_arr > 0 & round(sum(demand_priority_splits$value)) == 1.0) {
         res <- rbind(
-          res,
+          res)
           data.frame(
             id = ID:(ID + d_arr - 1),
             #Simulated time already waiting before converting to inpatient wl
@@ -139,7 +149,11 @@ simfn <-
             stringsAsFactors = FALSE
           )
         )
-        
+      }}
+# the above code does react to the length of time being projected. So it is actually setting up the simulation from here.
+    
+    
+    
         # DO the following:
         # 1. Simulate time already waiting before converting to inpatient wl 
         # 2. If planned, simulate their planned admission date
