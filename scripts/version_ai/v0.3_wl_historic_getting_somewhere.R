@@ -41,9 +41,11 @@ wl_52 <- data %>%
 # }
 #####
 ts.data_52<- ts(wl_52%>%dplyr::select(wm52))
-ARIMA_52<- auto.arima(ts.data_52, seasonal = T, stepwise = F, approximation = F, trace = T)
+ARIMA_52<- auto.arima(ts.data_52, seasonal = F, stepwise = F, approximation = F, trace = T)
+autoplot(ts.data_52) +
+  autolayer(ARIMA_52, series="Deterministic trend") +
 png(here("plots/forecast_arima/", paste0(speciality_name, "_wl52.png")))
-plot(forecast::forecast(ARIMA_52,h=365))
+plot(forecast::forecast(ARIMA_52,h=180))
 dev.off()
 
 ts.data_wl<- ts(wl%>%dplyr::select(patients))
@@ -52,6 +54,13 @@ png(here("plots/forecast_arima/", paste0(speciality_name, "_wl.png")))
 plot(forecast::forecast(ARIMA_wl,h=365))
 dev.off()
 }
+
+# output these as tables for when clearance
+# think more about data to use before
+# think about adding covariate columns for additions, removals and ROTT. The number of rows for this = horizon. This should be usable for reactivity too!
+## create matrix with forecasted covariates for future?
+
+
 
 #####
 # ts.data<- ts(wl_52%>%dplyr::select(wm52))
