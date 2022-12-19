@@ -57,7 +57,7 @@ dev.off()
 # think more about data to use before
 # think about adding covariate columns for additions, removals and ROTT. The number of rows for this = horizon. This should be usable for reactivity too!
 ## create matrix with forecasted covariates for future?
-
+# created matrix with them now. Just need to add
 parameters <- parameters
 
 #####
