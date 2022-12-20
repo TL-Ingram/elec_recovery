@@ -8,7 +8,7 @@ data <- read_csv(here("data", "hist_wl.csv"))
 speciality <- data %>%
   distinct(spec_desc) %>%
   pull(spec_desc)
-# speciality_name = "Colorectal Surgery"
+speciality_name = "Gastroenterology"
 
 ##### loop to output graphs for each speciality
 for (speciality_name in speciality) {
@@ -19,7 +19,9 @@ wl <- data %>%
            | covid_recovery_priority == "Planned")) %>%
   mutate(date = dmy(date)) %>%
   group_by(date) %>%
-  summarise(patients = n())
+  summarise(patients = n()) %>%
+  left_join(parameters_test, by = "date") %>%
+  filter(date > "2022-0-01")
 
 wl_52 <- data %>%
   filter(., spec_desc == speciality_name,
@@ -30,7 +32,9 @@ wl_52 <- data %>%
   mutate(date = dmy(date)) %>%
   group_by(date, wm52) %>%
   summarise(wm52 = n()) %>%
-  ungroup(.)
+  ungroup(.) %>%
+  left_join(parameters_test, by = "date") %>%
+  filter(date > "2022-06-01")
 
 #####
 #cbind by date
@@ -40,16 +44,22 @@ wl_52 <- data %>%
 # print(colon)
 # }
 #####
-ts.data_52<- ts(wl_52%>%dplyr::select(wm52))
-ARIMA_52<- auto.arima(ts.data_52, seasonal = F, stepwise = F, approximation = F, trace = T)
-png(here("plots/forecast_arima/", paste0(speciality_name, "_wl52.png")))
-plot(forecast::forecast(ARIMA_52,h=180))
-dev.off()
 
+
+
+ts.data_52<- ts(wl_52%>%dplyr::select(wm52))
+xreg <- as.matrix(cbind(additions = wl[, "adms"],
+              removals = wl[, "dtas"],
+              rott = wl[, "rott"]))
+ARIMA_52<- auto.arima(ts.data_52, seasonal = F, stepwise = F, approximation = F, trace = T, xreg = xreg)
+png(here("plots/forecast_arima/", paste0(speciality_name, "_wl52.png")))
+plot(forecast::forecast(ARIMA_52, xreg = xreg))
+dev.off()
+summary(ARIMA_52)
 ts.data_wl<- ts(wl%>%dplyr::select(patients))
-ARIMA_wl<- auto.arima(ts.data_wl, seasonal = T, stepwise = F, approximation = F, trace = T)
+ARIMA_wl<- auto.arima(ts.data_wl, seasonal = F, stepwise = F, approximation = F, trace = T, xreg = xreg)
 png(here("plots/forecast_arima/", paste0(speciality_name, "_wl.png")))
-plot(forecast::forecast(ARIMA_wl, h=365))
+plot(forecast::forecast(ARIMA_wl, h=365, xreg = xreg))
 dev.off()
 }
 
@@ -58,8 +68,14 @@ dev.off()
 # think about adding covariate columns for additions, removals and ROTT. The number of rows for this = horizon. This should be usable for reactivity too!
 ## create matrix with forecasted covariates for future?
 # created matrix with them now. Just need to add
-parameters <- parameters
-
+parameters_test <- parameters %>%
+  mutate(dt = ymd(dt)) %>%
+  filter(speciality == "Gastroenterology") %>%
+  rename("date" = dt)
+  ts()
+?autoplot
+ts()
+autoplot(parameters_test, facets = T)
 #####
 # ts.data<- ts(wl_52%>%dplyr::select(wm52))
 # ARIMA<- auto.arima(ts.data, seasonal = T, stepwise = F, approximation = F, trace = T)
