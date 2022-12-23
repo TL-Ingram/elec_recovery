@@ -13,3 +13,17 @@ Specialty level
 18 week waiting list?
 
 
+
+
+
+
+
+23/12/2022:
+Make function to output the forecast for all specialties - so need to clean up script first to put it all in a new script.
+Do it also for wl_52
+Create table of outputs for when lower bound of wl_52 first reaches 0
+Create table of outputs for wl mean size each year
+Group by those specialties forecasted to increase and those to decrease
+Do it for the whole waiting list too
+Then make it good to go into Qlik
+Put all of this into Asana
