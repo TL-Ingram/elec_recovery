@@ -19,7 +19,8 @@ Specialty level
 
 
 23/12/2022:
-Make function to output the forecast for all specialties - so need to clean up script first to put it all in a new script.
+DONE - Clean script 
+Make function to output the forecast for all specialties
 Do it also for wl_52
 Create table of outputs for when lower bound of wl_52 first reaches 0
 Create table of outputs for wl mean size each year

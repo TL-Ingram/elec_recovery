@@ -98,14 +98,14 @@ dev.off()
 # nsdiffs(ts.data)
 
 #####
-# fit_wl <- wl %>%
-#   as_tsibble() %>%
-#   fill_gaps() %>%
-#   model(ARIMA(patients))
-# fit_wl %>%
-#   forecast(h = "3 years") %>%
-#   autoplot(wl)
-# ggsave(here("plots", "forecast_arima", paste0(speciality_name, "_wl.jpg")), width = 10, height = 6, dpi = 600)
+fit_wl <- wl %>%
+  as_tsibble() #%>%
+  fill_gaps() %>%
+  model(ARIMA(patients))
+fit_wl %>%
+  forecast(h = "3 years") %>%
+  autoplot(wl)
+ggsave(here("plots", "forecast_arima", paste0(speciality_name, "_wl.jpg")), width = 10, height = 6, dpi = 600)
 #####
 # ts.data<- ts(wl_52%>%dplyr::select(mean))
 # ARIMA<- auto.arima(ts.data, seasonal = F)

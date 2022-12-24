@@ -1,9 +1,53 @@
 #####
+# Load packages
+shelf(tidyverse, here, lubridate, forecast, fpp3, hrbrthemes)
+
+
+--------------------------------------------------------------------------------
+#####
+# Load data
+data <- read_csv(here("data", "hist_wl.csv"))
+
+
+--------------------------------------------------------------------------------
+#####
 # Time period models trained on
 train_init = "2022-06-01"
 train_halt = "2022-11-01"
+# speciality_name = "Gastroenterology"
+
+# Pull speciality names into vector for looping through
+speciality <- data %>%
+  distinct(spec_desc) %>%
+  pull(spec_desc)
 
 
+##### loop to output graphs for each speciality
+for (speciality_name in speciality) {
+  wl <- data %>%
+    filter(., spec_desc == speciality_name,
+           !(covid_recovery_priority == "Unknown" 
+             | covid_recovery_priority == "Deferred"
+             | covid_recovery_priority == "Planned")) %>%
+    mutate(date = dmy(date)) %>%
+    group_by(date) %>%
+    summarise(patients = n()) %>%
+    left_join(parameters_test, by = "date") #%>%
+    # filter(date > "2022-01-01")
+  
+  wl_52 <- data %>%
+      filter(., spec_desc == speciality_name,
+             wm52 == 1,
+             !(covid_recovery_priority == "Unknown" 
+               | covid_recovery_priority == "Deferred"
+               | covid_recovery_priority == "Planned")) %>%
+      mutate(date = dmy(date)) %>%
+      group_by(date, wm52) %>%
+      summarise(wm52 = n()) %>%
+      ungroup(.) %>%
+      left_join(parameters_test, by = "date") #%>%
+      # filter(date > "2022-01-01")
+    
 --------------------------------------------------------------------------------
 #####
 # Filter to init date, filling date gaps and imputing missing wl size
