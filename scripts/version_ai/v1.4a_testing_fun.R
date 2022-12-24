@@ -13,7 +13,6 @@ speciality <- data %>%
   distinct(spec_desc) %>%
   pull(spec_desc)
 
-
 # Source scripts
 source(here("scripts", "version_ai", "sourced-wl_cleaning.R"))
 
@@ -28,26 +27,32 @@ wl_type <- wl_comp %>%
 # Time period models trained on
 train_init = "2022-08-01"
 train_halt = "2022-12-14" # eventually change this to sys.date - 1
-h = 1
+h = 365
 
 
 # ------------------------------------------------------------------------------
 #####
-# Filter to init date, filling date gaps and imputing missing wl size
-looping_test <- function(a, b){
-  for(i in a) {
+
+all_forecast <- function(wl_type, speciality){
+  # Filter to WL type
+  for(i in wl_type) {
     wl_prepared <- wl_comp %>%
       filter(., wl == i)
-    for (j in b) {
+    # Filter to speciality
+    for (j in speciality) {
       wl_prep <- wl_prepared %>%
         filter(., spec_desc == j)
+      # Filter to init date, filling date gaps and imputing missing wl size
       wl_ready <- wl_prep %>%
         filter(date > train_init) %>%
         as_tsibble(.) %>%
         fill_gaps(., date) %>%
         fill(., patients, .direction = "up") %>%
         ungroup(.)
-   
+      
+      
+      
+      # Script continuance test
       if(dim(wl_ready)[1] != 0) {
         
         # Filter to halt date
@@ -72,13 +77,13 @@ looping_test <- function(a, b){
       
         # Generate future sample paths
         sim_paths <- model_frame %>%
-          generate(h = h, times = 10)
-        dim(sim_paths)
+          generate(h = h, times = 25)
 
-        # Continuance test
-        cont_test <- sim_paths %>%
-          filter(.sim > 2)
         
+        
+        # Script continuance test
+        cont_test <- sim_paths %>%
+          filter(.sim > 4)
         if(dim(cont_test)[1] != 0) {
 
           # Compute forecast distributions from future sample paths and create fable object
@@ -93,7 +98,8 @@ looping_test <- function(a, b){
           results <- sim_results %>%
             filter(.model == "combination") %>%
             autoplot(wl_prep, level = 80, size = 1, alpha = 0.5)
-      
+          
+          # Create plot
           file_name <- paste0(i, "_", j)
           ggsave(here("plots", "combi_plots", filename=paste0(file_name, ".png")), device = "png")
         }
@@ -103,4 +109,4 @@ looping_test <- function(a, b){
 }
 
 
-looping_test(wl_type, speciality)        
+all_forecast(wl_type, speciality)        

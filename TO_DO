@@ -20,11 +20,13 @@ Specialty level
 
 23/12/2022:
 DONE - Clean script 
-Make function to output the forecast for all specialties
-Do it also for wl_52
+DONE - Make function to output the forecast for all specialties
+DONE - Do it also for wl_52
+Make graphs aesthetic
 Create table of outputs for when lower bound of wl_52 first reaches 0
 Create table of outputs for wl mean size each year
-Group by those specialties forecasted to increase and those to decrease
 Do it for the whole waiting list too
+Group by those specialties forecasted to increase and those to decrease
+Read and think more about dynamic regression (adding predictors to the forecast; chp 9.1 Hynmann)
 Then make it good to go into Qlik
 Put all of this into Asana
