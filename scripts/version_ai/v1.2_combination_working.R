@@ -1,19 +1,19 @@
 #####
 # Load packages
-shelf(tidyverse, here, lubridate, forecast, fpp3, hrbrthemes)
+shelf(tidyverse, here, lubridate, forecast, fpp3, hrbrthemes, scales)
 
 
---------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------
 #####
 # Load data
 data <- read_csv(here("data", "hist_wl.csv"))
 
 
---------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------
 #####
 # Time period models trained on
-train_init = "2022-06-01"
-train_halt = "2022-11-01"
+train_init = date("2022-06-01")
+train_halt = date("2022-11-01")
 # speciality_name = "Gastroenterology"
 
 # Pull speciality names into vector for looping through
@@ -21,18 +21,15 @@ speciality <- data %>%
   distinct(spec_desc) %>%
   pull(spec_desc)
 
-
 ##### loop to output graphs for each speciality
-for (speciality_name in speciality) {
   wl <- data %>%
-    filter(., spec_desc == speciality_name,
+    filter(., spec_desc == "Trauma & Orthopaedics",
            !(covid_recovery_priority == "Unknown" 
              | covid_recovery_priority == "Deferred"
              | covid_recovery_priority == "Planned")) %>%
     mutate(date = dmy(date)) %>%
     group_by(date) %>%
-    summarise(patients = n()) %>%
-    left_join(parameters_test, by = "date") #%>%
+    summarise(patients = n()) #%>%
     # filter(date > "2022-01-01")
   
   wl_52 <- data %>%
@@ -48,17 +45,13 @@ for (speciality_name in speciality) {
       left_join(parameters_test, by = "date") #%>%
       # filter(date > "2022-01-01")
     
---------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------
 #####
 # Filter to init date, filling date gaps and imputing missing wl size
 wl_prepared <- wl %>%
   filter(., date > train_init) %>%
   as_tsibble(.) %>%
-  fill_gaps(., date) %>%
-  fill(., speciality, .direction = "up") %>%
-  group_by(., speciality) %>%
-  fill(., patients, .direction = "up") %>%
-  ungroup(.)
+  fill_gaps(., date)
 
 # Filter to halt date
 train_set <- wl_prepared %>%
@@ -69,7 +62,7 @@ train_set <- wl_prepared %>%
 h <- nrow(wl_prepared) - nrow(train_set)
 
 
---------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------
 ##### 
 # Build forecasting models to test
 STLF <- decomposition_model(
@@ -84,10 +77,10 @@ model_frame <- train_set %>%
     arima = ARIMA(patients, stepwise = F, approximation = F, trace = T),
     nnar = NNETAR(patients, stepwise = F, trace = T)
   ) %>%
-  mutate(combination = (ets + stlf + arima + nnar)/4)
+  mutate(combination = (arima + nnar)/2)
 
 
---------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------
 #####
 # Generate future sample paths
 sim_paths <- model_frame %>%
@@ -102,9 +95,25 @@ sim_results <- sim_paths %>%
   as_fable(index=date, key=.model, distribution=dist, response="patients")
 
 # Plot results over-laid on wl and filter for combination model
+title = speciality_name
 sim_results %>%
-  #filter(.model == "combination") %>%
-  autoplot(wl, level = 80, size = 1, alpha = 0.5)
+  filter(.model == "combination") %>%
+  autoplot(wl, level = 80, size = 1, alpha = 0.5) +
+  theme_ipsum_pub(axis_text_size = 16,
+                  axis_title_size = 16) +
+  theme(panel.grid.major = element_line(colour = "grey90"),
+        panel.grid.minor = element_line(colour = "grey90"),
+        plot.caption = element_text(size = 12),
+        legend.position = "none") +
+  geom_vline(xintercept = train_halt, linetype = "dashed", colour = "blue", size = 0.8, alpha = 0.2) +
+  labs(fill = "",
+       x = "",
+       y = "Patients",
+       title = title,
+       level = "",
+       subtitle = paste0("Forecast horizon begins from ", train_halt, " and extends for ", h, " days"),
+       caption = "Shaded region depicts 80% prediction interval")
+  
 
 # Check accuracy of 95% prediction intervals
 sim_results %>% accuracy(wl, measures = interval_accuracy_measures, level=95)
