@@ -25,8 +25,8 @@ wl_type <- wl_comp %>%
 # ------------------------------------------------------------------------------
 #####
 # Time period models trained on
-train_init = "2022-08-01"
-train_halt = "2022-12-14" # eventually change this to sys.date - 1
+train_init = date("2022-08-01")
+train_halt = date("2022-12-14") # eventually change this to sys.date - 1
 h = 365
 
 
@@ -77,7 +77,7 @@ all_forecast <- function(wl_type, speciality){
       
         # Generate future sample paths
         sim_paths <- model_frame %>%
-          generate(h = h, times = 25)
+          generate(h = h, times = 500)
 
         
         
@@ -86,27 +86,50 @@ all_forecast <- function(wl_type, speciality){
           filter(.sim > 4)
         if(dim(cont_test)[1] != 0) {
 
-          # Compute forecast distributions from future sample paths and create fable object
+          # Compute forecast distributions from future sample paths and create 
+          # fable object
           sim_results <- sim_paths %>%
             as_tibble() %>%
             group_by(date, .model) %>%
             summarise(dist = distributional::dist_sample(list(.sim))) %>%
             ungroup() %>%
-            as_fable(index=date, key=.model, distribution=dist, response="patients")
+            as_fable(index=date, key=.model, distribution=dist, 
+                     response="patients")
 
           # Plot results over-laid on wl and filter for combination model
-          results <- sim_results %>%
+          
+
+          sim_results %>%
             filter(.model == "combination") %>%
-            autoplot(wl_prep, level = 80, size = 1, alpha = 0.5)
+            autoplot(wl_prep, level = 80, size = 1, alpha = 0.8) +
+            geom_line(data = wl_prep, aes(x = date, y = patients), size = 1,
+                      alpha = 0.8) +
+            geom_vline(data = wl_prep, xintercept = train_halt, 
+                       linetype = "dashed", colour = "blue",
+                       size = 0.5, alpha = 0.3) +
+            labs(fill = "",
+                 x = "",
+                 y = "Patients",
+                 title = j,
+                 level = "",
+                 subtitle = paste0("Forecast horizon begins from ",
+                                   train_halt, " and extends for ", h, " days"),
+                 caption = "Blue line depicts mean predicted patient number
+                    Shaded region depicts 80% prediction interval") +
+            plot_defaults
           
           # Create plot
           file_name <- paste0(i, "_", j)
-          ggsave(here("plots", "combi_plots", filename=paste0(file_name, ".png")), device = "png")
+          ggsave(here("plots", "combi_plots", filename=paste0(
+            file_name, ".png")), 
+            device = "png")
         }
       }
     }
   }
 }
-
-
 all_forecast(wl_type, speciality)        
+
+
+# ------------------------------------------------------------------------------
+#####

@@ -98,21 +98,28 @@ sim_results <- sim_paths %>%
 title = speciality_name
 sim_results %>%
   filter(.model == "combination") %>%
-  autoplot(wl, level = 80, size = 1, alpha = 0.5) +
-  theme_ipsum_pub(axis_text_size = 16,
-                  axis_title_size = 16) +
+  autoplot(wl, level = 80, size = 1.5, alpha = 0.5) +
+  geom_line(data = wl, aes(x = date, y = patients), size = 1.5, alpha = 0.5) +
+  theme_ipsum_pub(axis_text_size = 14,
+                  axis_title_size = 16,
+                  subtitle_size = 16,
+                  plot_title_size = 20) +
   theme(panel.grid.major = element_line(colour = "grey90"),
         panel.grid.minor = element_line(colour = "grey90"),
         plot.caption = element_text(size = 12),
-        legend.position = "none") +
-  geom_vline(xintercept = train_halt, linetype = "dashed", colour = "blue", size = 0.8, alpha = 0.2) +
+        legend.position = "none",
+        axis.text.x = element_text(angle = 0, vjust = 1, hjust=0.5)) +
+  scale_x_date(breaks = "2 month", minor_breaks = "1 month", labels=date_format("%b-%y")) +
+  # ylim(x,y) +
+  geom_vline(xintercept = train_halt, linetype = "dashed", colour = "blue", size = 0.8, alpha = 0.3) +
   labs(fill = "",
        x = "",
        y = "Patients",
-       title = title,
+       title = speciality,
        level = "",
        subtitle = paste0("Forecast horizon begins from ", train_halt, " and extends for ", h, " days"),
-       caption = "Shaded region depicts 80% prediction interval")
+       caption = "Blue line depicts mean daily predicted patient number
+       Shaded region depicts 80% prediction interval")
   
 
 # Check accuracy of 95% prediction intervals
