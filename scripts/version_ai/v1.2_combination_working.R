@@ -22,8 +22,8 @@ speciality <- data %>%
   pull(spec_desc)
 
 ##### loop to output graphs for each speciality
-  wl <- data %>%
-    filter(., spec_desc == "Trauma & Orthopaedics",
+wl <- data %>%
+  filter(., spec_desc == "Trauma & Orthopaedics",
            !(covid_recovery_priority == "Unknown" 
              | covid_recovery_priority == "Deferred"
              | covid_recovery_priority == "Planned")) %>%
@@ -95,33 +95,29 @@ sim_results <- sim_paths %>%
   as_fable(index=date, key=.model, distribution=dist, response="patients")
 
 # Plot results over-laid on wl and filter for combination model
-title = speciality_name
+title = j
+j = "Trauma & Orthopaedics"
+
 sim_results %>%
   filter(.model == "combination") %>%
-  autoplot(wl, level = 80, size = 1.5, alpha = 0.5) +
-  geom_line(data = wl, aes(x = date, y = patients), size = 1.5, alpha = 0.5) +
-  theme_ipsum_pub(axis_text_size = 14,
-                  axis_title_size = 16,
-                  subtitle_size = 16,
-                  plot_title_size = 20) +
-  theme(panel.grid.major = element_line(colour = "grey90"),
-        panel.grid.minor = element_line(colour = "grey90"),
-        plot.caption = element_text(size = 12),
-        legend.position = "none",
-        axis.text.x = element_text(angle = 0, vjust = 1, hjust=0.5)) +
-  scale_x_date(breaks = "2 month", minor_breaks = "1 month", labels=date_format("%b-%y")) +
-  # ylim(x,y) +
-  geom_vline(xintercept = train_halt, linetype = "dashed", colour = "blue", size = 0.8, alpha = 0.3) +
+  autoplot(wl, level = 80, size = 0.6, alpha = 0.9) +
+  geom_line(data = wl, aes(x = date, y = patients), size = 0.6,
+            alpha = 0.7, colour = "grey50") +
+  geom_text(data = wl, aes(x = train_init, y = Inf, label = train_init), vjust = 1.5 + 0.1, hjust = -0.25, size = 4, type = "serif") +
+  plot_defaults +
   labs(fill = "",
        x = "",
        y = "Patients",
-       title = speciality,
+       title = j,
        level = "",
-       subtitle = paste0("Forecast horizon begins from ", train_halt, " and extends for ", h, " days"),
-       caption = "Blue line depicts mean daily predicted patient number
-       Shaded region depicts 80% prediction interval")
+       subtitle = paste0("Forecast horizon begins from ",
+                         train_halt, " and extends for ", h, " days"),
+       caption = "Blue line depicts mean predicted patient number
+                    Shaded region depicts 80% prediction interval")
   
-
+file_name <- paste0(i, "_", j)
+ggsave(here("plots", "combi_plots", filename=paste0("test.png")), 
+  device = "png")
 # Check accuracy of 95% prediction intervals
 sim_results %>% accuracy(wl, measures = interval_accuracy_measures, level=95)
         
