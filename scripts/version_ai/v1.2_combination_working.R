@@ -72,8 +72,6 @@ STLF <- decomposition_model(
 model_frame <- train_set %>%
   fill_gaps(patients = mean(patients)) %>%
   fabletools::model(
-    ets = ETS(patients, trace = T),
-    stlf = STLF,
     arima = ARIMA(patients, stepwise = F, approximation = F, trace = T),
     nnar = NNETAR(patients, stepwise = F, trace = T)
   ) %>%
@@ -93,6 +91,7 @@ sim_results <- sim_paths %>%
   summarise(dist = distributional::dist_sample(list(.sim))) %>%
   ungroup() %>%
   as_fable(index=date, key=.model, distribution=dist, response="patients")
+
 
 # Plot results over-laid on wl and filter for combination model
 title = j
@@ -121,3 +120,20 @@ ggsave(here("plots", "combi_plots", filename=paste0("test.png")),
 # Check accuracy of 95% prediction intervals
 sim_results %>% accuracy(wl, measures = interval_accuracy_measures, level=95)
         
+
+
+sim_results_test <- sim_paths %>%
+  as_tibble(.) %>%
+  filter(., .model == "combination") %>%
+  select(-(.model)) %>%
+  group_by(., date) %>%
+  summarise(min = round(min(.sim)),
+            mean = round(mean(.sim)),
+            max = round(max(.sim))) %>%
+  ungroup(.) %>%
+  filter(., date == train_halt | date == (train_halt + 10) | date == (train_halt + 20)) %>%
+  pivot_longer(., cols = c(2:4), names_to = "stat", values_to = "patients") %>%
+  pivot_wider(names_from = "date", values_from = "patients")
+    
+
+?pivot_wider
