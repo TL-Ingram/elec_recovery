@@ -8,8 +8,10 @@ Make graphs aesthetic
 --- Check sizing of the graphs
 --- Have each graph knit together for each speciality - e.g T&O full and 52 weeks ontop of each other.
 
+PARTIAL DONE - Create table of outputs for wl mean size each year
+--- Need to move into function
+
 Create table of outputs for when lower bound of wl_52 first reaches 0
-Create table of outputs for wl mean size each year
 Do it for the whole waiting list too
 Group by those specialties forecasted to increase and those to decrease
 Read and think more about dynamic regression (adding predictors to the forecast; chp 9.1 Hynmann)

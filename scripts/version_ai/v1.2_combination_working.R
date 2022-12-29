@@ -127,13 +127,9 @@ sim_results_test <- sim_paths %>%
   filter(., .model == "combination") %>%
   select(-(.model)) %>%
   group_by(., date) %>%
-  summarise(min = round(min(.sim)),
-            mean = round(mean(.sim)),
-            max = round(max(.sim))) %>%
+  summarise("lower bound" = round(min(.sim)),
+            "upper bound" = round(max(.sim)),
+            mean = round(mean(.sim))) %>%
   ungroup(.) %>%
   filter(., date == train_halt | date == (train_halt + 10) | date == (train_halt + 20)) %>%
-  pivot_longer(., cols = c(2:4), names_to = "stat", values_to = "patients") %>%
-  pivot_wider(names_from = "date", values_from = "patients")
-    
-
-?pivot_wider
+  mutate(., "percent change" = round(-100 + (mean/lag(mean)*100), digits = 2))
