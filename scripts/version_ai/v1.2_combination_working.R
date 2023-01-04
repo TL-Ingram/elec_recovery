@@ -13,7 +13,7 @@ data <- read_csv(here("data", "hist_wl.csv"))
 #####
 # Time period models trained on
 train_init = date("2022-06-01")
-train_halt = date("2022-11-01")
+train_halt = date("2022-12-14")
 # speciality_name = "Gastroenterology"
 
 # Pull speciality names into vector for looping through
@@ -23,7 +23,7 @@ speciality <- data %>%
 
 ##### loop to output graphs for each speciality
 wl <- data %>%
-  filter(., spec_desc == "Trauma & Orthopaedics",
+  filter(., spec_desc == "General Surgery",
            !(covid_recovery_priority == "Unknown" 
              | covid_recovery_priority == "Deferred"
              | covid_recovery_priority == "Planned")) %>%
@@ -32,17 +32,17 @@ wl <- data %>%
     summarise(patients = n()) #%>%
     # filter(date > "2022-01-01")
   
-  wl_52 <- data %>%
-      filter(., spec_desc == speciality_name,
+  wl <- data %>%
+      filter(., spec_desc == "General Surgery",
              wm52 == 1,
              !(covid_recovery_priority == "Unknown" 
                | covid_recovery_priority == "Deferred"
                | covid_recovery_priority == "Planned")) %>%
       mutate(date = dmy(date)) %>%
       group_by(date, wm52) %>%
-      summarise(wm52 = n()) %>%
-      ungroup(.) %>%
-      left_join(parameters_test, by = "date") #%>%
+      summarise(patients = n()) %>%
+      ungroup(.) #%>%
+      # left_join(parameters_test, by = "date") #%>%
       # filter(date > "2022-01-01")
     
 #--------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ train_set <- wl_prepared %>%
 
 # horizon (days)
 h <- nrow(wl_prepared) - nrow(train_set)
-
+h <- 700
 
 #--------------------------------------------------------------------------------
 ##### 
@@ -120,12 +120,14 @@ ggsave(here("plots", "combi_plots", filename=paste0("test.png")),
 # Check accuracy of 95% prediction intervals
 sim_results %>% accuracy(wl, measures = interval_accuracy_measures, level=95)
         
+sim_results_raw
 
-
-sim_results_test <- sim_paths %>%
+sim_results_raw <- sim_paths %>%
   as_tibble(.) %>%
   filter(., .model == "combination") %>%
-  select(-(.model)) %>%
+  select(-(.model))
+
+sim_results_table <- sim_results_raw %>%
   group_by(., date) %>%
   summarise("lower bound" = round(min(.sim)),
             "upper bound" = round(max(.sim)),
@@ -133,3 +135,13 @@ sim_results_test <- sim_paths %>%
   ungroup(.) %>%
   filter(., date == train_halt | date == (train_halt + 10) | date == (train_halt + 20)) %>%
   mutate(., "percent change" = round(-100 + (mean/lag(mean)*100), digits = 2))
+
+zero_waiting <- sim_results_raw %>%
+  group_by(., date) %>%
+  filter(., .sim < 1) %>%
+  ungroup(.) %>%
+  mutate(clear_date = date == min(date))
+  filter(date == min(date)) %>%
+  mutate(clear_date = if_else(date ))
+  
+         

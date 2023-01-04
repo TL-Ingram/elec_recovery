@@ -36,7 +36,7 @@ h = 365
 # ------------------------------------------------------------------------------
 #####
 
-all_forecast <- function(wl_type, speciality){
+spec_forecast <- function(wl_type, speciality){
   # Filter to WL type
   for(i in wl_type) {
     wl_prepared <- wl_comp %>%
@@ -57,6 +57,8 @@ all_forecast <- function(wl_type, speciality){
       
       # Script continuance test
       if(dim(wl_ready)[1] != 0) {
+        
+        
         
         # Filter to halt date
         train_set <- wl_ready %>%
@@ -89,6 +91,8 @@ all_forecast <- function(wl_type, speciality){
           filter(.sim > 4)
         if(dim(cont_test)[1] != 0) {
 
+          
+
           # Compute forecast distributions from future sample paths and create 
           # fable object
           sim_results <- sim_paths %>%
@@ -100,8 +104,6 @@ all_forecast <- function(wl_type, speciality){
                      response="patients")
 
           # Plot results over-laid on wl and filter for combination model
-          
-
           sim_results %>%
             filter(.model == "combination") %>%
             autoplot(wl_prep, level = 80, size = 0.6, alpha = 0.9) +
@@ -131,18 +133,40 @@ all_forecast <- function(wl_type, speciality){
                                   "\nBlue line depicts mean predicted patient number
                                   Shaded region depicts 80% prediction interval"))
           
-          # Create plot
+          # Save plot
           file_name <- paste0(i, "_", j)
           ggsave(here("plots", "combi_plots", filename=paste0(
             file_name, ".png")), 
             device = "png")
+          
+          # Create csv of history plus forecast horizon
+          sim_results_raw <- sim_paths %>%
+            as_tibble(.) %>%
+            filter(., .model == "combination") %>%
+            select(-(.model)) %>%
+            mutate("speciality" = j) %>%
+            write.csv(here("csv", "history+horizon", "horizon", filename = paste0(file_name, ".csv")))
+          
+          # sim_results_table <- sim_results_raw %>%
+          #   group_by(., date) %>%
+          #   summarise("lower bound" = round(min(.sim)),
+          #             "upper bound" = round(max(.sim)),
+          #             mean = round(mean(.sim))) %>%
+          #   ungroup(.) %>%
+          #   filter(., date == train_halt | date == (train_halt + 10) | date == (train_halt + 20)) %>%
+          #   mutate(., "percent change" = round(-100 + (mean/lag(mean)*100), digits = 2))
+            # create another mutate if else patients <0 then 0 for c(2:4)
         }
       }
     }
   }
 }
-all_forecast(wl_type, speciality)        
+spec_forecast(wl_type, speciality)        
 
 
 # ------------------------------------------------------------------------------
 #####
+all_forecast <-list.files(path = here("csv/history+horizon/horizon/"), pattern = "*.csv", full.names = T) %>%
+  map_dfr(read_csv) #%>% 
+bind_rows()
+?list.files
