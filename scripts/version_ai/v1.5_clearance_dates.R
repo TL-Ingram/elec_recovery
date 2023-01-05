@@ -35,7 +35,6 @@ h = 365
 
 # ------------------------------------------------------------------------------
 #####
-
 spec_forecast <- function(wl_type, speciality){
   # Filter to WL type
   for(i in wl_type) {
@@ -168,8 +167,7 @@ spec_forecast <- function(wl_type, speciality){
               select(date, speciality, clear_date) %>%
               mutate(wl = i) %>%
               distinct(., clear_date, .keep_all = T) %>%
-              mutate(., clear_date = if_else(clear_date == T, date, ymd(NA))) %>%
-              drop_na(.)
+              mutate(., clear_date = if_else(clear_date == T, date, ymd(NA)))
             write.csv(zero_waiting, here("csv", "clear_date", "speciality", filename = paste0(file_name, ".csv")))
           }
         }
@@ -182,13 +180,12 @@ spec_forecast(wl_type, speciality)
 
 # ------------------------------------------------------------------------------
 #####
-all_forecast <- list.files(path = here("csv/history+horizon/horizon/"), pattern = "*.csv", full.names = T) %>%
-  map_dfr(read_csv)
+# all_forecast <- list.files(path = here("csv/history+horizon/horizon/"), pattern = "*.csv", full.names = T) %>%
+#   map_dfr(read_csv)
 
 all_clearance <- list.files(path = here("csv/clear_date/speciality/"), pattern = "*.csv", full.names = T) %>%
-  map_dfr(read_csv)
-
-
-
-# make table with all the columns the spec names, then insert clearance dates from all_clearance. 
-## If none then NA. If NA then convert to "no clearance date within timeframe.
+  map_dfr(read_csv) %>%
+  group_by(., speciality) %>%
+  slice_max(!is.na(clear_date), with_ties = F) %>%
+  select(., speciality, clear_date)
+write.csv(all_clearance, here("csv", "clear_date", "v1.0", filename = "clearance_dates.csv"), row.names = F)
