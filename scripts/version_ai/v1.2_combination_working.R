@@ -137,11 +137,13 @@ sim_results_table <- sim_results_raw %>%
   mutate(., "percent change" = round(-100 + (mean/lag(mean)*100), digits = 2))
 
 zero_waiting <- sim_results_raw %>%
-  group_by(., date) %>%
-  filter(., .sim < 1) %>%
-  ungroup(.) %>%
-  mutate(clear_date = date == min(date))
+  mutate(clear_date = if_else(.sim < -40, T, F)) %>%
+  mutate(clear_date_test = filter(clear_date == T))
+  filter(clear_date == T) %>%
+  filter(date == min(date))
+         clear_date_test = filter(clear_date == TRUE) date == max(date), 1, 0))
   filter(date == min(date)) %>%
   mutate(clear_date = if_else(date ))
   
+# a column that either says date first return to zero or not before next 365 days
          
