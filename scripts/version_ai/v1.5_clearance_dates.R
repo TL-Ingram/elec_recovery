@@ -35,6 +35,7 @@ h = 365
 
 # ------------------------------------------------------------------------------
 #####
+# Produce forecast outputs, csv + plot, for each speciality
 spec_forecast <- function(wl_type, speciality){
   # Filter to WL type
   for(i in wl_type) {
@@ -145,7 +146,8 @@ spec_forecast <- function(wl_type, speciality){
             mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
             filter(., .model == "combination") %>%
             select(-(.model)) %>%
-            mutate("speciality" = j)
+            mutate("speciality" = j,
+                   "wl_type" = i)
           write.csv(sim_results_raw, here("csv", "history+horizon", "horizon", filename = paste0(file_name, ".csv")))
           
           sim_results_table <- sim_results_raw %>%
@@ -180,12 +182,74 @@ spec_forecast(wl_type, speciality)
 
 # ------------------------------------------------------------------------------
 #####
-# all_forecast <- list.files(path = here("csv/history+horizon/horizon/"), pattern = "*.csv", full.names = T) %>%
-#   map_dfr(read_csv)
-
+# Produce clearance dates table for each speciality
 all_clearance <- list.files(path = here("csv/clear_date/speciality/"), pattern = "*.csv", full.names = T) %>%
   map_dfr(read_csv) %>%
   group_by(., speciality) %>%
   slice_max(!is.na(clear_date), with_ties = F) %>%
   select(., speciality, clear_date)
 write.csv(all_clearance, here("csv", "clear_date", "v1.0", filename = "clearance_dates.csv"), row.names = F)
+
+
+# ------------------------------------------------------------------------------
+#####
+# Knit all speciality horizons' together
+all_forecast <- list.files(path = here("csv/history+horizon/horizon/"), pattern = "*.csv", full.names = T) %>%
+  map_dfr(read_csv)
+
+
+# Tidy historical wl into appropriate format
+{
+  hist_wl <- wl_comp %>% 
+  rename("speciality" = spec_desc,
+         "wl_type" = wl) %>%
+  group_by(wl_type, date) %>%
+  summarise(patients = sum(patients)) %>%
+  mutate(filter = "historic")
+  
+  # Tidy all_forecast to same format as hist_wl, then knit together
+  af_test <- all_forecast %>%
+    group_by(., wl_type, speciality, date) %>%
+    summarise(max = quantile(.sim, 0.8),
+              mean = mean(.sim),
+              min = quantile(.sim, 0.2)) %>%
+    ungroup(.) %>%
+    select(-(speciality)) %>%
+    group_by(date, wl_type) %>%
+    summarise(p_mean = sum(`mean`),
+              p_upper = sum(`max`),
+              p_lower = sum(`min`)) %>%
+    filter(date >= train_halt) %>%
+    mutate(filter = "forecast")
+
+  # Row bind historical and forecast
+  knitted <- rbind(hist_wl, af_test) %>%
+    pivot_longer(cols = c(patients, p_upper, p_mean, p_lower), 
+                names_to = "group", values_to = "data")
+}
+
+# Plot knitted historical and forecast
+knitted %>%
+  ggplot(aes(x = date, y = data, colour = group)) +
+  facet_grid(wl_type ~ ., scales = "free") +
+  geom_line(alpha = 0.9, size = 0.6) +
+  scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
+  plot_defaults_two +
+  scale_colour_manual(values = c(patients = "black", p_mean = "blue", p_lower = "lightblue3", p_upper = "lightblue3")) +
+  labs(fill = "",
+       x = "",
+       y = "Patients",
+       title = "",
+       level = "",
+       subtitle = paste0("Forecast horizon begins from ",
+                         train_halt, " and extends for ", h, " days"),
+       caption = paste0("Training period is the set of data fed into the model to generate the forecast
+                                  Training period is from ", train_init, 
+                        " to ", yesterday, 
+                        "\nBlue line depicts mean predicted patient number
+                                  Shaded region depicts 80% prediction interval"))
+
+
+# change names of groups
+# change wl type labels
+# set aesthetics same as other graphs

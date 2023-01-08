@@ -8,12 +8,20 @@ Make graphs aesthetic
 --- Check sizing of the graphs
 --- Have each graph knit together for each speciality - e.g T&O full and 52 weeks ontop of each other.
 
-PARTIAL DONE - Create table of outputs for wl mean size each year
---- Need to move into function
+DONE - Create table of outputs for wl mean size each year
+--- Moved into function
 
-Create table of outputs for when lower bound of wl_52 first reaches 0
+DONE - Create table of outputs for when lower bound of wl_52 first reaches 0
+--- Done for each spec
+
 Do it for the whole waiting list too
+
+
+
 Group by those specialties forecasted to increase and those to decrease
 Read and think more about dynamic regression (adding predictors to the forecast; chp 9.1 Hynmann)
 Then make it good to go into Qlik
 Put all of this into Asana
+
+Nice to do:
+--- Merge graph and table output of mean size per year
