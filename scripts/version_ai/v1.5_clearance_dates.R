@@ -148,7 +148,8 @@ spec_forecast <- function(wl_type, speciality){
             select(-(.model)) %>%
             mutate("speciality" = j,
                    "wl_type" = i)
-          write.csv(sim_results_raw, here("csv", "history+horizon", "horizon", filename = paste0(file_name, ".csv")))
+          write.csv(sim_results_raw, here("csv", "history+horizon", "horizon", 
+                                          filename = paste0(file_name, ".csv")))
           
           sim_results_table <- sim_results_raw %>%
             group_by(., date) %>%
@@ -156,8 +157,10 @@ spec_forecast <- function(wl_type, speciality){
                       "upper bound" = round(max(.sim)),
                       mean = round(mean(.sim))) %>%
             ungroup(.) %>%
-            filter(., date == train_halt | date == (train_halt + 182) | date == (train_halt + 364)) %>%
-            mutate(., "percent change" = round(-100 + (mean/lag(mean)*100), digits = 2))
+            filter(., date == train_halt | date == (train_halt + 182) | 
+                     date == (train_halt + 364)) %>%
+            mutate(., "percent change" = round(-100 + (mean/lag(mean)*100), 
+                                               digits = 2))
           
           
           if(i == "lw_wl") {
@@ -170,7 +173,8 @@ spec_forecast <- function(wl_type, speciality){
               mutate(wl = i) %>%
               distinct(., clear_date, .keep_all = T) %>%
               mutate(., clear_date = if_else(clear_date == T, date, ymd(NA)))
-            write.csv(zero_waiting, here("csv", "clear_date", "speciality", filename = paste0(file_name, ".csv")))
+            write.csv(zero_waiting, here("csv", "clear_date", "speciality", 
+                                         filename = paste0(file_name, ".csv")))
           }
         }
       }
@@ -183,18 +187,21 @@ spec_forecast(wl_type, speciality)
 # ------------------------------------------------------------------------------
 #####
 # Produce clearance dates table for each speciality
-all_clearance <- list.files(path = here("csv/clear_date/speciality/"), pattern = "*.csv", full.names = T) %>%
+all_clearance <- list.files(path = here("csv/clear_date/speciality/"), 
+                            pattern = "*.csv", full.names = T) %>%
   map_dfr(read_csv) %>%
   group_by(., speciality) %>%
   slice_max(!is.na(clear_date), with_ties = F) %>%
   select(., speciality, clear_date)
-write.csv(all_clearance, here("csv", "clear_date", "v1.0", filename = "clearance_dates.csv"), row.names = F)
+write.csv(all_clearance, here("csv", "clear_date", "v1.0", 
+                              filename = "clearance_dates.csv"), row.names = F)
 
 
 # ------------------------------------------------------------------------------
 #####
 # Knit all speciality horizons' together
-all_forecast <- list.files(path = here("csv/history+horizon/horizon/"), pattern = "*.csv", full.names = T) %>%
+all_forecast <- list.files(path = here("csv/history+horizon/horizon/"), 
+                           pattern = "*.csv", full.names = T) %>%
   map_dfr(read_csv)
 
 
@@ -223,19 +230,25 @@ all_forecast <- list.files(path = here("csv/history+horizon/horizon/"), pattern 
     mutate(filter = "forecast")
 
   # Row bind historical and forecast
-  knitted <- rbind(hist_wl, af_test) %>%
+  knitted <- rbind(hist_wl, af_test) #%>%
     pivot_longer(cols = c(patients, p_upper, p_mean, p_lower), 
                 names_to = "group", values_to = "data")
 }
 
 # Plot knitted historical and forecast
 knitted %>%
-  ggplot(aes(x = date, y = data, colour = group)) +
-  facet_grid(wl_type ~ ., scales = "free") +
-  geom_line(alpha = 0.9, size = 0.6) +
+  ggplot() +
+  geom_line(aes(date, patients, colour = "patients")) +
+  geom_line(aes(date, p_mean, colour = "p_mean")) +
+  geom_line(aes(date, p_lower, colour = "p_lower")) +
+  geom_line(aes(date, p_upper, colour = "p_upper")) +
+  geom_ribbon(aes(x=date, ymax = p_upper, ymin = p_lower), fill="lightblue3", alpha=.4) +
+  facet_grid(wl_type ~ ., scales = "free", labeller = labeller(wl_type = wl_label)) +
   scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
   plot_defaults_two +
-  scale_colour_manual(values = c(patients = "black", p_mean = "blue", p_lower = "lightblue3", p_upper = "lightblue3")) +
+  scale_colour_manual(values = c(patients = "black", p_mean = "blue", 
+                                 p_lower = "lightblue3", 
+                                 p_upper = "lightblue3")) +
   labs(fill = "",
        x = "",
        y = "Patients",
@@ -244,10 +257,14 @@ knitted %>%
        subtitle = paste0("Forecast horizon begins from ",
                          train_halt, " and extends for ", h, " days"),
        caption = paste0("Training period is the set of data fed into the model to generate the forecast
-                                  Training period is from ", train_init, 
-                        " to ", yesterday, 
+                                  Training period is from ", train_init,
+                        " to ", yesterday,
                         "\nBlue line depicts mean predicted patient number
                                   Shaded region depicts 80% prediction interval"))
+
+# Save plot
+ggsave(here("plots", "all_spec_wl", "all_spec_v1.1.png"), 
+  device = "png")
 
 
 # change names of groups

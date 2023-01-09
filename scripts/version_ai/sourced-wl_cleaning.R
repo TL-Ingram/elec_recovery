@@ -56,5 +56,8 @@ plot_defaults_two <- list(theme_ipsum_pub(axis_text_size = 8,
                               axis.title.y = element_text(face = "bold")) 
 )
 
-group_colors <- c(patients = "black", p_lower = "blue", 
-                  p_mean = "blue", p_upper = "blue")
+# Plot labels
+{
+wl_label <- c("52-week WL", "inpatient WL")
+names(wl_label) <- c("lw_wl", "o_wl")
+}
