@@ -236,6 +236,7 @@ all_forecast <- list.files(path = here("csv/history+horizon/horizon/"),
 }
 
 # Plot knitted historical and forecast
+{
 knitted %>%
   ggplot() +
   geom_line(aes(date, patients, colour = "patients")) +
@@ -265,7 +266,7 @@ knitted %>%
 # Save plot
 ggsave(here("plots", "all_spec_wl", "all_spec_v1.1.png"), 
   device = "png")
-
+}
 
 # change names of groups
 # change wl type labels
