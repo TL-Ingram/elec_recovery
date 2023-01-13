@@ -33,92 +33,104 @@ train_period_date = train_init + train_period_days
 yesterday = train_halt - 1
 h = 365
 
-
+speciality = "Gastroenterology"
 # ------------------------------------------------------------------------------
 #####
 # Produce forecast outputs, csv + plot, for each speciality
-spec_forecast <- function(wl_type, speciality){
-  # Filter to WL type
-  for(i in wl_type) {
-    wl_prepared <- wl_comp %>%
-      filter(., wl == i)
+# spec_forecast <- function(wl_type, speciality){
+#   # Filter to WL type
+list_results <- list()
+list_raw <- list()
+   for(i in wl_type) {
+     {
+       wl_prepared <- wl_comp %>%
+         filter(., wl == i)
     # Filter to speciality
-    for (j in speciality) {
-      wl_prep <- wl_prepared %>%
-        filter(., spec_desc == j)
+       for (j in speciality) {
+         wl_prep <- wl_prepared %>%
+           filter(., spec_desc == j)
       # Filter to init date, filling date gaps and imputing missing wl size
-      wl_ready <- wl_prep %>%
-        filter(date > train_init) %>%
-        as_tsibble(.) %>%
-        fill_gaps(., date) %>%
-        fill(., patients, .direction = "up") %>%
-        ungroup(.)
+         writeLines(paste0("Waiting list: ", i,
+                           "\nSpeciality: ", j))
+         wl_ready <- wl_prep %>%
+           filter(date > train_init) %>%
+           as_tsibble(., index = "date") %>%
+           fill_gaps(., date) %>%
+           fill(., patients, .direction = "up") %>%
+           ungroup(.)
       
       
       
-      # Script continuance test
-      if(dim(wl_ready)[1] != 0) {
+         # Script continuance test
+         if(dim(wl_ready)[1] != 0) {
+           writeLines(paste0("Building models and running simulations..."))
         
         
         
-        # Filter to halt date
-        train_set <- wl_ready %>%
-          filter(., date < train_halt) %>%
-          select(., date, patients)
+           # Filter to halt date
+           train_set <- wl_ready %>%
+             filter(., date < train_halt) %>%
+             select(., date, patients)
       
-        # Build forecasting models to test
-        STLF <- decomposition_model(
-          STL((patients) ~ season(window = Inf)),
-          ETS(season_adjust ~ season("N"))
-        )
-        model_frame <- train_set %>%
-          fill_gaps(patients = mean(patients)) %>%
-          fabletools::model(
-            ets = ETS(patients, trace = T),
-            stlf = STLF,
-            arima = ARIMA(patients, stepwise = F, approximation = F, trace = T),
-            nnar = NNETAR(patients, stepwise = F, trace = T)
-          ) %>%
-          mutate(combination = (ets + stlf + arima + nnar)/4)
+           # Build forecasting models to test
+           STLF <- decomposition_model(
+             STL((patients) ~ season(window = Inf)),
+             ETS(season_adjust ~ season("N"))
+             )
+           model_frame <- train_set %>%
+             fill_gaps(patients = mean(patients)) %>%
+             fabletools::model(
+               ets = ETS(patients, trace = F),
+               stlf = STLF,
+               arima = ARIMA(patients, stepwise = F, approximation = F, trace = F),
+               nnar = NNETAR(patients, stepwise = F, trace = F)
+               ) %>%
+             mutate(combination = (ets + stlf + arima + nnar)/4)
       
-        # Generate future sample paths
-        sim_paths <- model_frame %>%
-          generate(h = h, times = 5)
+           # Generate future sample paths
+           sim_paths <- model_frame %>%
+             generate(h = h, times = 5)
 
         
         
-        # Script continuance test
-        cont_test <- sim_paths %>%
-          filter(.sim > 4)
-        if(dim(cont_test)[1] != 0) {
+           # Script continuance test
+           cont_test <- sim_paths %>%
+             filter(.sim > 4)
+           if(dim(cont_test)[1] != 0) {
 
           
 
-          # Compute forecast distributions from future sample paths and create 
-          # fable object
-          sim_results <- sim_paths %>%
-            as_tibble(.) %>%
-            mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
-            group_by(date, .model) %>%
-            summarise(dist = distributional::dist_sample(list(.sim))) %>%
-            ungroup() %>%
-            as_fable(index=date, key=.model, distribution=dist, 
-                     response="patients")
+             # Compute forecast distributions from future sample paths and create 
+             # fable object
+             sim_results <- sim_paths %>%
+               as_tibble(., index = "date") %>%
+               mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
+               group_by(date, .model) %>%
+               summarise(dist = distributional::dist_sample(list(.sim)), .groups = "drop_last") %>%
+               ungroup() #%>%
+               # as_fable(index=date, key=.model, distribution=dist, 
+               #          response="patients")
+             
+             list_results[[paste0(i, "_", j)]] <- sim_results
+             
 
+#####
+             
           # Plot results over-laid on wl and filter for combination model
+             df <- read.table(list_results)
           sim_results %>%
             filter(.model == "combination") %>%
             autoplot(wl_prep, level = 80, size = 0.6, alpha = 0.9) +
             geom_line(data = wl_prep, aes(x = date, y = patients), size = 0.6,
                       alpha = 0.7, colour = "grey50") +
-            geom_vline(data = wl_prep, xintercept = train_halt, 
+            geom_vline(data = wl_prep, xintercept = train_halt,
                        linetype = "dashed", colour = "grey50",
                        size = 0.5, alpha = 0.8) +
             geom_vline(data = wl_prep, xintercept = train_init,
                        linetype = "dashed", colour = "grey50",
                        size = 0.5, alpha = 0.8) +
-            geom_text(data = wl_prep, aes(x = train_period_date, y = Inf, 
-                                          label = train_period_label), 
+            geom_text(data = wl_prep, aes(x = train_period_date, y = Inf,
+                                          label = train_period_label),
                       vjust = 1.5, size = 2.5, colour = "grey40") +
             scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
             plot_defaults +
@@ -130,38 +142,51 @@ spec_forecast <- function(wl_type, speciality){
                  subtitle = paste0("Forecast horizon begins from ",
                                    train_halt, " and extends for ", h, " days"),
                  caption = paste0("Training period is the set of data fed into the model to generate the forecast
-                                  Training period is from ", train_init, 
-                                  " to ", yesterday, 
+                                  Training period is from ", train_init,
+                                  " to ", yesterday,
                                   "\nBlue line depicts mean predicted patient number
                                   Shaded region depicts 80% prediction interval"))
-          
+
           # Save plot
           file_name <- paste0(i, "_", j)
           ggsave(here("plots", "combi_plots", filename=paste0(
-            file_name, ".png")), 
+            file_name, ".png")),
             device = "png")
           
           # Create csv of history plus forecast horizon
-          sim_results_raw <- sim_paths %>%
-            as_tibble(.) %>%
-            mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
-            filter(., .model == "combination") %>%
-            select(-(.model)) %>%
-            mutate("speciality" = j,
-                   "wl_type" = i)
+#####
+             sim_results_raw <- sim_paths %>%
+               as_tibble(., index = "date") %>%
+               mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
+               filter(., .model == "combination") %>%
+               select(-(.model)) %>%
+               mutate("speciality" = j,
+                      "wl_type" = i)
+             
+             list_raw[[paste0(i, "_", j)]] <- sim_results_raw
+             writeLines(c("Added to list.", ""))
+           }
+         }
+       }
+     }
+     # print(length(list_res))
+     # writeLines(c("List created.", ""))
+   }
+rm(list_res, list_raw)
+# -------         
           write.csv(sim_results_raw, here("csv", "history+horizon", "horizon", 
                                           filename = paste0(file_name, ".csv")))
           
-          sim_results_table <- sim_results_raw %>%
-            group_by(., date) %>%
-            summarise("lower bound" = round(min(.sim)),
-                      "upper bound" = round(max(.sim)),
-                      mean = round(mean(.sim))) %>%
-            ungroup(.) %>%
-            filter(., date == train_halt | date == (train_halt + 182) | 
-                     date == (train_halt + 364)) %>%
-            mutate(., "percent change" = round(-100 + (mean/lag(mean)*100), 
-                                               digits = 2))
+          # sim_results_table <- sim_results_raw %>%
+          #   group_by(., date) %>%
+          #   summarise("lower bound" = round(min(.sim)),
+          #             "upper bound" = round(max(.sim)),
+          #             mean = round(mean(.sim))) %>%
+          #   ungroup(.) %>%
+          #   filter(., date == train_halt | date == (train_halt + 182) | 
+          #            date == (train_halt + 364)) %>%
+          #   mutate(., "percent change" = round(-100 + (mean/lag(mean)*100), 
+          #                                      digits = 2))
           
           
           if(i == ">52" | i == ">65") {
