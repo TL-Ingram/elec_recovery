@@ -23,5 +23,22 @@ Read and think more about dynamic regression (adding predictors to the forecast;
 Then make it good to go into Qlik
 Put all of this into Asana
 
+
+
+
 Nice to do:
 --- Merge graph and table output of mean size per year
+
+09/01/2023 meeting
+Add demand and capacity interactivity - cap = rate of taking people off
+On 19th (Thurs) want to meet again with S&P to give them updates they've asked for:
+  - Clearance dates that are NA to have % change from last position
+  - 65 week waiters on top of 52
+  - Overall WL with planned, deferred, unknown too
+    - Check numbers with John/Patrick to ensure correct
+How easy is this to apply to outpatients? Look into this and give a statment of how long expected to take by next Thurs
+
+
+Make all outputs into a list inside the same function. Once this is done then have it join planned, def, unk, active together and plot simultaneously.
+Maybe at around sim_results here I can make lists of each and then filter and plot from there?
+Test it for only long waiters. Seeing some weird issue for whatever reason.

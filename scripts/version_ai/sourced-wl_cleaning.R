@@ -1,31 +1,35 @@
 #####
 # Filter data appropriate for the models
-# Overall WL (P2-P4)
-o_wl <- data %>%
-  filter(., !(covid_recovery_priority == "Unknown" 
-           | covid_recovery_priority == "Deferred"
-           | covid_recovery_priority == "Planned")) %>%
-  mutate(date = dmy(date)) %>%
-  group_by(date, spec_desc) %>%
-  summarise(patients = n()) %>%
-  ungroup(.) %>%
-  mutate(wl = "o_wl")
+data_mutate <- data %>%
+  mutate(., date = dmy(date),
+         covid_recovery_priority = if_else(
+           grepl("[[:digit:]]", covid_recovery_priority), 
+           "Active_wl", covid_recovery_priority))
 
-# 52 week waiter WL. lw = long waiter
-lw_wl <- data %>%
-  filter(., wm52 == 1,
-         !(covid_recovery_priority == "Unknown" 
-           | covid_recovery_priority == "Deferred"
-           | covid_recovery_priority == "Planned")) %>%
-  mutate(date = dmy(date)) %>%
-  group_by(date, spec_desc, wm52) %>%
+# Overall WL (P2-P4, planned, deferred, unknown)
+o_wl <- data_mutate %>%
+  group_split(covid_recovery_priority) %>%
+  map(. %>%
+  group_by(date, spec_desc, covid_recovery_priority) %>%
   summarise(patients = n()) %>%
   ungroup(.) %>%
-  select(-(wm52)) %>%
-  mutate(wl = "lw_wl")
-  
-wl_comp <- rbind(o_wl, lw_wl)
-rm(data, lw_wl, o_wl)
+  rename("wl" = covid_recovery_priority))
+
+# 52 & 65 week waiter WL. Only active_wl
+lw_wl <- data_mutate %>%
+  filter(., (wm52 == 1 | wm65 == 1) &
+         covid_recovery_priority == "Active_wl") %>%
+  mutate(., "temp" = if_else(wm52 == 1 & wm65 == 1, ">65", ">52")) %>%
+  group_by(date, spec_desc, temp) %>%
+  summarise(patients = n()) %>%
+  ungroup(.) %>%
+  rename("wl" = temp)
+
+# Bind data.frames of all groups together
+wl_comp <- bind_rows(o_wl, lw_wl)
+
+# clean up global env
+rm(data, data_mutate, o_wl, lw_wl)
 
 
 # ------------------------------------------------------------------------------
