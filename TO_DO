@@ -42,3 +42,10 @@ How easy is this to apply to outpatients? Look into this and give a statment of 
 Make all outputs into a list inside the same function. Once this is done then have it join planned, def, unk, active together and plot simultaneously.
 Maybe at around sim_results here I can make lists of each and then filter and plot from there?
 Test it for only long waiters. Seeing some weird issue for whatever reason.
+
+
+I think need to put all info into lists, and then merge each specific pair of dfs together (active_wl + active_forecast for Gastro, etc.) Then plot these. Then cowplot to put plots of the same spec all together.
+Then create big full wl piece for the whole waiting list.
+
+**********
+In fact, do the whole wl first then do it by speciality? And table for when 52 and 65 week waiters cleared.
