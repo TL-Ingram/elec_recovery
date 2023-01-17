@@ -49,3 +49,7 @@ Then create big full wl piece for the whole waiting list.
 
 **********
 In fact, do the whole wl first then do it by speciality? And table for when 52 and 65 week waiters cleared.
+
+
+Nice to do:
+Add a new row if 52 week waiters cleared already, then add todays date. At present it doesn't show the row if no waiters.

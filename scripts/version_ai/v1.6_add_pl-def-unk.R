@@ -32,26 +32,37 @@ train_period_days = as.numeric(train_halt - train_init)/2
 train_period_date = train_init + train_period_days
 yesterday = train_halt - 1
 h = 365
+# h = as.numeric(date("2025-12-31") - train_halt)
+# wl_type = c("Planned", "Active_wl")
+# i = c("Planned", "Active_wl")
+# j = "Haematology"
+speciality = c("Haematology", "Gastroenterology", "Urology")
 
-speciality = "Gastroenterology"
+
 # ------------------------------------------------------------------------------
 #####
 # Produce forecast outputs, csv + plot, for each speciality
 # spec_forecast <- function(wl_type, speciality){
 #   # Filter to WL type
-list_results <- list()
-list_raw <- list()
-   for(i in wl_type) {
-     {
-       wl_prepared <- wl_comp %>%
+spec_forecast <- function(wl_type, speciality) {
+  list_paths <- list()
+  list_wl <- list()
+  for(i in wl_type) {
+    wl_prepared <- wl_comp %>%
          filter(., wl == i)
     # Filter to speciality
        for (j in speciality) {
          wl_prep <- wl_prepared %>%
            filter(., spec_desc == j)
+         
+         # Write historic paths to list
+         list_wl[[paste0(i, "_", j)]] <- wl_prep
+         wl_keys <- bind_rows(list_wl, .id = "spec_desc")
+         
       # Filter to init date, filling date gaps and imputing missing wl size
          writeLines(paste0("Waiting list: ", i,
                            "\nSpeciality: ", j))
+         
          wl_ready <- wl_prep %>%
            filter(date > train_init) %>%
            as_tsibble(., index = "date") %>%
@@ -62,7 +73,7 @@ list_raw <- list()
       
       
          # Script continuance test
-         if(dim(wl_ready)[1] != 0) {
+         if(dim(wl_ready)[1] >= 10) {
            writeLines(paste0("Building models and running simulations..."))
         
         
@@ -89,211 +100,150 @@ list_raw <- list()
       
            # Generate future sample paths
            sim_paths <- model_frame %>%
-             generate(h = h, times = 5)
+             generate(h = h, times = 10)
 
-        
         
            # Script continuance test
            cont_test <- sim_paths %>%
-             filter(.sim > 4)
-           if(dim(cont_test)[1] != 0) {
-
-          
-
-             # Compute forecast distributions from future sample paths and create 
-             # fable object
-             sim_results <- sim_paths %>%
-               as_tibble(., index = "date") %>%
-               mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
-               group_by(date, .model) %>%
-               summarise(dist = distributional::dist_sample(list(.sim)), .groups = "drop_last") %>%
-               ungroup() #%>%
-               # as_fable(index=date, key=.model, distribution=dist, 
-               #          response="patients")
-             
-             list_results[[paste0(i, "_", j)]] <- sim_results
-             
-
-#####
-             
-          # Plot results over-laid on wl and filter for combination model
-             df <- read.table(list_results)
-          sim_results %>%
-            filter(.model == "combination") %>%
-            autoplot(wl_prep, level = 80, size = 0.6, alpha = 0.9) +
-            geom_line(data = wl_prep, aes(x = date, y = patients), size = 0.6,
-                      alpha = 0.7, colour = "grey50") +
-            geom_vline(data = wl_prep, xintercept = train_halt,
-                       linetype = "dashed", colour = "grey50",
-                       size = 0.5, alpha = 0.8) +
-            geom_vline(data = wl_prep, xintercept = train_init,
-                       linetype = "dashed", colour = "grey50",
-                       size = 0.5, alpha = 0.8) +
-            geom_text(data = wl_prep, aes(x = train_period_date, y = Inf,
-                                          label = train_period_label),
-                      vjust = 1.5, size = 2.5, colour = "grey40") +
-            scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
-            plot_defaults +
-            labs(fill = "",
-                 x = "",
-                 y = "Patients",
-                 title = j,
-                 level = "",
-                 subtitle = paste0("Forecast horizon begins from ",
-                                   train_halt, " and extends for ", h, " days"),
-                 caption = paste0("Training period is the set of data fed into the model to generate the forecast
-                                  Training period is from ", train_init,
-                                  " to ", yesterday,
-                                  "\nBlue line depicts mean predicted patient number
-                                  Shaded region depicts 80% prediction interval"))
-
-          # Save plot
-          file_name <- paste0(i, "_", j)
-          ggsave(here("plots", "combi_plots", filename=paste0(
-            file_name, ".png")),
-            device = "png")
-          
-          # Create csv of history plus forecast horizon
-#####
-             sim_results_raw <- sim_paths %>%
-               as_tibble(., index = "date") %>%
-               mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
-               filter(., .model == "combination") %>%
-               select(-(.model)) %>%
-               mutate("speciality" = j,
-                      "wl_type" = i)
-             
-             list_raw[[paste0(i, "_", j)]] <- sim_results_raw
-             writeLines(c("Added to list.", ""))
-           }
+             filter(.model == "combination") %>%
+             mutate(.sim = if_else(.sim < 1, 0, .sim),
+                    wl = i) %>%
+             select(-(.model)) %>%
+             as_tibble(.)
+           
+           
+           # if(dim(cont_test)[1] != 0) {
+           
+               # Write forecast paths to list
+             list_paths[[paste0(i, "_", j)]] <- cont_test
+             path_keys <- bind_rows(list_paths, .id = "spec_desc")
+             writeLines(c(""))
          }
        }
-     }
-     # print(length(list_res))
-     # writeLines(c("List created.", ""))
-   }
-rm(list_res, list_raw)
-# -------         
-          write.csv(sim_results_raw, here("csv", "history+horizon", "horizon", 
-                                          filename = paste0(file_name, ".csv")))
-          
-          # sim_results_table <- sim_results_raw %>%
-          #   group_by(., date) %>%
-          #   summarise("lower bound" = round(min(.sim)),
-          #             "upper bound" = round(max(.sim)),
-          #             mean = round(mean(.sim))) %>%
-          #   ungroup(.) %>%
-          #   filter(., date == train_halt | date == (train_halt + 182) | 
-          #            date == (train_halt + 364)) %>%
-          #   mutate(., "percent change" = round(-100 + (mean/lag(mean)*100), 
-          #                                      digits = 2))
-          
-          
-          if(i == ">52" | i == ">65") {
-            
-            zero_waiting <- sim_results_raw %>%
-              mutate(clear_date = if_else(.sim == 0, T, F)) %>%
-              group_by(clear_date) %>%
-              filter(date == min(date)) %>%
-              select(date, speciality, clear_date) %>%
-              mutate(wl = i) %>%
-              distinct(., clear_date, .keep_all = T) %>%
-              mutate(., clear_date = if_else(clear_date == T, date, ymd(NA)))
-            write.csv(zero_waiting, here("csv", "clear_date", "speciality", 
-                                         filename = paste0(file_name, ".csv")))
-          }
-        }
-      }
-    }
   }
-}
-spec_forecast(wl_type, speciality)
-
-
-# ------------------------------------------------------------------------------
-#####
-# Produce clearance dates table for each speciality
-all_clearance <- list.files(path = here("csv/clear_date/speciality/"), 
-                            pattern = "*.csv", full.names = T) %>%
-  map_dfr(read_csv) %>%
-  group_by(., speciality) %>%
-  slice_max(!is.na(clear_date), with_ties = F) %>%
-  select(., speciality, clear_date)
-write.csv(all_clearance, here("csv", "clear_date", "v1.0", 
-                              filename = "clearance_dates.csv"), row.names = F)
-
-
-# ------------------------------------------------------------------------------
-#####
-# Knit all speciality horizons' together
-all_forecast <- list.files(path = here("csv/history+horizon/horizon/"), 
-                           pattern = "*.csv", full.names = T) %>%
-  map_dfr(read_csv)
-
-
-# Tidy historical wl into appropriate format
-{
-  hist_wl <- wl_comp %>% 
-  rename("speciality" = spec_desc,
-         "wl_type" = wl) %>%
-  group_by(wl_type, date) %>%
-  summarise(patients = sum(patients)) %>%
-  mutate(filter = "historic")
+  # Create long waiters "clearance date" table
+  source(here("scripts", "version_ai", "sourced-clearance_table.R"))
+  write.csv(lw_table, here("csv", "clear_date", "v1.3", 
+                               "clear_dates.csv"))
+  print(lw_table)
   
-  # Tidy all_forecast to same format as hist_wl, then knit together
-  af_test <- all_forecast %>%
-    group_by(., wl_type, speciality, date) %>%
-    summarise(max = quantile(.sim, 0.8),
-              mean = mean(.sim),
-              min = quantile(.sim, 0.2)) %>%
-    ungroup(.) %>%
-    select(-(speciality)) %>%
-    group_by(date, wl_type) %>%
-    summarise(p_mean = sum(`mean`),
-              p_upper = sum(`max`),
-              p_lower = sum(`min`)) %>%
-    filter(date >= train_halt) %>%
-    mutate(filter = "forecast")
-
-  # Row bind historical and forecast
-  knitted <- rbind(hist_wl, af_test) #%>%
-    pivot_longer(cols = c(patients, p_upper, p_mean, p_lower), 
-                names_to = "group", values_to = "data")
-}
-
-# Plot knitted historical and forecast
-{
-knitted %>%
-  ggplot() +
-  geom_line(aes(date, patients, colour = "patients")) +
-  geom_line(aes(date, p_mean, colour = "p_mean")) +
-  geom_line(aes(date, p_lower, colour = "p_lower")) +
-  geom_line(aes(date, p_upper, colour = "p_upper")) +
-  geom_ribbon(aes(x=date, ymax = p_upper, ymin = p_lower), fill="lightblue3", alpha=.4) +
-  facet_grid(wl_type ~ ., scales = "free", labeller = labeller(wl_type = wl_label)) +
-  scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
-  plot_defaults_two +
-  scale_colour_manual(values = c(patients = "black", p_mean = "blue", 
-                                 p_lower = "lightblue3", 
-                                 p_upper = "lightblue3")) +
-  labs(fill = "",
-       x = "",
-       y = "Patients",
-       title = "",
-       level = "",
-       subtitle = paste0("Forecast horizon begins from ",
-                         train_halt, " and extends for ", h, " days"),
-       caption = paste0("Training period is the set of data fed into the model to generate the forecast
+  
+  # Create graph of overall waiting list position
+  source("")
+  
+    hist_wl <- wl_keys %>%
+      group_by(wl, date) %>%
+      summarise(patients = sum(patients)) %>%
+      mutate(filter = "historic")
+    
+    # Tidy all_forecast to same format as hist_wl, then knit together
+    af_test <- path_keys %>%
+      group_by(., wl, spec_desc, date) %>%
+      summarise(max = quantile(.sim, 0.8),
+                mean = mean(.sim),
+                min = quantile(.sim, 0.2)) %>%
+      ungroup(.) %>%
+      select(-(spec_desc)) %>%
+      group_by(wl, date) %>%
+      summarise(p_mean = sum(`mean`),
+                p_upper = sum(`max`),
+                p_lower = sum(`min`)) %>%
+      filter(date >= train_halt) %>%
+      mutate(filter = "forecast")
+    
+    # Row bind historical and forecast
+    knitted <- rbind(hist_wl, af_test)
+    
+    # Plot
+      knitted %>%
+        ggplot() +
+        geom_line(aes(date, patients, colour = "patients")) +
+        geom_line(aes(date, p_mean, colour = "p_mean")) +
+        geom_line(aes(date, p_lower, colour = "p_lower")) +
+        geom_line(aes(date, p_upper, colour = "p_upper")) +
+        geom_ribbon(aes(x=date, ymax = p_upper, ymin = p_lower), fill="lightblue3", alpha=.4) +
+        facet_grid(wl ~ ., scales = "free", labeller = labeller(wl_type = wl_label)) +
+        scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
+        plot_defaults_two +
+        scale_colour_manual(values = c(patients = "black", p_mean = "blue", 
+                                       p_lower = "lightblue3", 
+                                       p_upper = "lightblue3")) +
+        labs(fill = "",
+             x = "",
+             y = "Patients",
+             title = "",
+             level = "",
+             subtitle = paste0("Forecast horizon begins from ",
+                               train_halt, " and extends for ", h, " days"),
+             caption = paste0("Training period is the set of data fed into the model to generate the forecast
                                   Training period is from ", train_init,
-                        " to ", yesterday,
-                        "\nBlue line depicts mean predicted patient number
+                              " to ", yesterday,
+                              "\nBlue line depicts mean predicted patient number
                                   Shaded region depicts 80% prediction interval"))
+      
+      # Save plot
+      ggsave(here("plots", "all_spec_wl", "all_spec_v1.2.png"), 
+             device = "png")
+  }
 
-# Save plot
-ggsave(here("plots", "all_spec_wl", "all_spec_v1.1.png"), 
-  device = "png")
-}
+# --------------
+spec_forecast(wl_type, speciality)
+# --------------
 
-# change names of groups
-# change wl type labels
-# set aesthetics same as other graphs
+
+#####
+# Compute forecast distributions from future sample paths and create 
+             # fable object
+           
+             sim_results <- path_keys %>%
+               as_tibble(., index = "date") %>%
+               mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
+               group_by(date, spec_desc) %>%
+               summarise(dist = distributional::dist_sample(list(.sim)), .groups = "drop_last") %>%
+               ungroup(.) %>%
+               as_fable(index=date, key=spec_desc, distribution=dist, 
+                        response="patients")
+
+#####       
+             # test <- wl_keys %>% 
+             #   select(-(wl)) %>%
+             #   as_tibble(., key = "spec_desc", index = "date") #%>%
+               # as_fable(index="date", key="spec_desc", dist  = wl, response = "patients")
+             
+             #Plot results over-laid on wl and filter for combination model
+
+          sim_results %>%
+            autoplot()#, level = 80, size = 0.6, alpha = 0.9) #+
+          #   geom_line(data = wl_prep, aes(x = date, y = patients), size = 0.6,
+          #             alpha = 0.7, colour = "grey50") +
+          #   geom_vline(data = wl_prep, xintercept = train_halt,
+          #              linetype = "dashed", colour = "grey50",
+          #              size = 0.5, alpha = 0.8) +
+          #   geom_vline(data = wl_prep, xintercept = train_init,
+          #              linetype = "dashed", colour = "grey50",
+          #              size = 0.5, alpha = 0.8) +
+          #   geom_text(data = wl_prep, aes(x = train_period_date, y = Inf,
+          #                                 label = train_period_label),
+          #             vjust = 1.5, size = 2.5, colour = "grey40") +
+          #   scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
+          #   plot_defaults +
+          #   labs(fill = "",
+          #        x = "",
+          #        y = "Patients",
+          #        title = j,
+          #        level = "",
+          #        subtitle = paste0("Forecast horizon begins from ",
+          #                          train_halt, " and extends for ", h, " days"),
+          #        caption = paste0("Training period is the set of data fed into the model to generate the forecast
+          #                         Training period is from ", train_init,
+          #                         " to ", yesterday,
+          #                         "\nBlue line depicts mean predicted patient number
+          #                         Shaded region depicts 80% prediction interval"))
+
+          # # Save plot
+          # file_name <- paste0(i, "_", j)
+          # ggsave(here("plots", "combi_plots", filename=paste0(
+          #   file_name, ".png")),
+          #   device = "png")
+          
+          # Create csv of history plus forecast horizon

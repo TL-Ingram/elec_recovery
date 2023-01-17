@@ -62,6 +62,9 @@ plot_defaults_two <- list(theme_ipsum_pub(axis_text_size = 8,
 
 # Plot labels
 {
-wl_label <- c("52-week WL", "inpatient WL")
-names(wl_label) <- c("lw_wl", "o_wl")
+# wl_label <- wl_type
+# names(wl_label) <- c("lw_wl", "o_wl")
 }
+
+
+# ------------------------------------------------------------------------------
