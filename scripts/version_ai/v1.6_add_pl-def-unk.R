@@ -26,8 +26,8 @@ wl_type <- wl_comp %>%
 # ------------------------------------------------------------------------------
 #####
 # Time period models trained on
-train_init = date("2022-10-01")
-train_halt = date("2023-01-09") # eventually change this to sys.date - 1
+train_init = date("2022-10-17")
+train_halt = date("2023-01-17") # eventually change this to sys.date - 1
 train_period_label = "Training period"
 train_period_days = as.numeric(train_halt - train_init)/2
 train_period_date = train_init + train_period_days
@@ -130,9 +130,9 @@ spec_forecast <- function(wl_type, speciality) {
   # Create long waiters "clearance date" table
   source(here("scripts", "version_ai", "sourced-clearance_table.R"))
   write.csv(lw_65, here("csv", "clear_date", "v1.4", 
-                               "65wk_clear_dates.csv"))
+                               "65wk_clear_dates.csv"), row.names = F)
   write.csv(lw_52, here("csv", "clear_date", "v1.4", 
-                        "52wk_clear_dates.csv"))
+                        "52wk_clear_dates.csv"), row.names = F)
   print(lw_table)
   
   
