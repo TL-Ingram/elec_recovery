@@ -53,3 +53,18 @@ In fact, do the whole wl first then do it by speciality? And table for when 52 a
 
 Nice to do:
 Add a new row if 52 week waiters cleared already, then add todays date. At present it doesn't show the row if no waiters.
+
+17/01
+
+Make sure basic outputs are as required:
+DONE - 1) % change from last position
+DONE - 2) Extend h to end of 2025?
+  - Think I want this back at 365 days
+3) Ensure concordance?
+4) Put 52 and 65 together same graph
+5) Make graph of all planned, unknown, deferred, active together.
+6) Unknown is not reliable so remove. Or make all deferred?
+
+
+-- Table ready but would like to split into two tables for 52 and 65 and highlight which already at zero, rather than having them not show, if I've time.
+

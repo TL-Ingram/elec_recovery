@@ -19,13 +19,14 @@ source(here("scripts", "version_ai", "sourced-wl_cleaning.R"))
 # Pull type of waiting list into vector for looping through
 wl_type <- wl_comp %>%
   distinct(wl) %>%
+  filter(., wl != c("Deferred", "Unknown")) %>%
   pull(wl)
 
 
 # ------------------------------------------------------------------------------
 #####
 # Time period models trained on
-train_init = date("2022-09-01")
+train_init = date("2022-10-01")
 train_halt = date("2023-01-09") # eventually change this to sys.date - 1
 train_period_label = "Training period"
 train_period_days = as.numeric(train_halt - train_init)/2
@@ -33,10 +34,10 @@ train_period_date = train_init + train_period_days
 yesterday = train_halt - 1
 h = 365
 # h = as.numeric(date("2025-12-31") - train_halt)
-# wl_type = c("Planned", "Active_wl")
-# i = c("Planned", "Active_wl")
+# wl_type = c("Planned", "Inpatient_wl")
+# i = c("Planned", "Inpatient_wl")
 # j = "Haematology"
-speciality = c("Haematology", "Gastroenterology", "Urology")
+# speciality = c("General Medicine", "Haematology", "Gastroenterology", "Urology")
 
 
 # ------------------------------------------------------------------------------
@@ -100,7 +101,7 @@ spec_forecast <- function(wl_type, speciality) {
       
            # Generate future sample paths
            sim_paths <- model_frame %>%
-             generate(h = h, times = 10)
+             generate(h = h, times = 15)
 
         
            # Script continuance test
@@ -121,15 +122,22 @@ spec_forecast <- function(wl_type, speciality) {
          }
        }
   }
+  # Write rds for speedy testing
+  write_rds(wl_keys, here("rds", "keys", "wl_keys.rds"))
+  write_rds(path_keys, here("rds", "keys", "path_keys.rds"))
+  
+  
   # Create long waiters "clearance date" table
   source(here("scripts", "version_ai", "sourced-clearance_table.R"))
-  write.csv(lw_table, here("csv", "clear_date", "v1.3", 
-                               "clear_dates.csv"))
+  write.csv(lw_65, here("csv", "clear_date", "v1.4", 
+                               "65wk_clear_dates.csv"))
+  write.csv(lw_52, here("csv", "clear_date", "v1.4", 
+                        "52wk_clear_dates.csv"))
   print(lw_table)
   
   
   # Create graph of overall waiting list position
-  source("")
+  # source("")
   
     hist_wl <- wl_keys %>%
       group_by(wl, date) %>%
@@ -152,45 +160,120 @@ spec_forecast <- function(wl_type, speciality) {
       mutate(filter = "forecast")
     
     # Row bind historical and forecast
-    knitted <- rbind(hist_wl, af_test)
+    knitted <- rbind(hist_wl, af_test) %>%
+      mutate(wl = str_replace(wl, ">52", ">52 weeks"),
+             wl = str_replace(wl, ">65", ">65 weeks"))
     
-    # Plot
-      knitted %>%
-        ggplot() +
-        geom_line(aes(date, patients, colour = "patients")) +
-        geom_line(aes(date, p_mean, colour = "p_mean")) +
-        geom_line(aes(date, p_lower, colour = "p_lower")) +
-        geom_line(aes(date, p_upper, colour = "p_upper")) +
-        geom_ribbon(aes(x=date, ymax = p_upper, ymin = p_lower), fill="lightblue3", alpha=.4) +
-        facet_grid(wl ~ ., scales = "free", labeller = labeller(wl_type = wl_label)) +
-        scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
-        plot_defaults_two +
-        scale_colour_manual(values = c(patients = "black", p_mean = "blue", 
-                                       p_lower = "lightblue3", 
-                                       p_upper = "lightblue3")) +
-        labs(fill = "",
-             x = "",
-             y = "Patients",
-             title = "",
-             level = "",
-             subtitle = paste0("Forecast horizon begins from ",
-                               train_halt, " and extends for ", h, " days"),
-             caption = paste0("Training period is the set of data fed into the model to generate the forecast
+    # Plot inpatient and planned waiting lists
+    plot_o <- knitted %>%
+      ggplot() +
+      geom_line(aes(date, patients, colour = wl), alpha = 0.8, size = 0.8, 
+                data = knitted %>% 
+                  filter(wl %in% c("Planned", 
+                                   "Inpatient_wl"))) + 
+      geom_line(aes(date, p_mean, colour = wl), alpha = 0.8, size = 0.8, 
+                data = knitted %>% 
+                  filter(wl %in% c("Planned", 
+                                   "Inpatient_wl"))) +
+      geom_ribbon(aes(date, ymax = p_upper, ymin = p_lower), 
+                  fill="slategray3", alpha=.3,
+                  data = knitted %>% filter(wl %in% "Planned")) +
+      geom_ribbon(aes(date, ymax = p_upper, ymin = p_lower), 
+                  fill="slategray3", alpha=.3,
+                  data = knitted %>% filter(wl %in% "Inpatient_wl")) +
+      geom_vline(data = wl_prep, xintercept = train_halt,
+                   linetype = "dashed", colour = "grey50",
+                   size = 0.8, alpha = 0.8) +
+      geom_vline(data = wl_prep, xintercept = train_init,
+                   linetype = "dashed", colour = "grey50",
+                   size = 0.8, alpha = 0.8) +
+      geom_text(data = wl_prep, aes(x = train_period_date, y = Inf,
+                                      label = train_period_label),
+                  vjust = 1.5, size = 4.5, colour = "grey40") +
+      scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
+      plot_defaults_two +
+      scale_colour_manual(values = c("royalblue3", "mediumpurple3")) +
+      labs(fill = "",
+           x = "",
+           y = "Patients",
+           title = "WWL inpatient waiting list - overall position",
+           level = "",
+           colour = "",
+           subtitle = paste0("Forecast horizon begins from ",
+                             train_halt, " and extends for ", h, " days"),
+           caption = paste0("Training period is the set of data fed into the model to generate the forecast
                                   Training period is from ", train_init,
-                              " to ", yesterday,
-                              "\nBlue line depicts mean predicted patient number
-                                  Shaded region depicts 80% prediction interval"))
-      
-      # Save plot
-      ggsave(here("plots", "all_spec_wl", "all_spec_v1.2.png"), 
-             device = "png")
-  }
+                            " to ", yesterday,
+                            "\nHorizon lines depict mean predicted patient number
+                                  Shaded regions depict 80% prediction interval"))
+    
+    # Save plot
+    ggsave(here("plots", "all_spec_wl", "overall_wl.jpg"), 
+           device = "jpg", width = 14, height = 10)
+    
+    # Print plot
+    print(plot_o)
+    
+    # Plot long waiters
+    plot_lw <- knitted %>%
+      ggplot() +
+      geom_line(aes(date, patients, colour = wl), alpha = 0.8, size = 0.8, 
+                data = knitted %>% 
+                  filter(wl %in% c(">52 weeks", 
+                                   ">65 weeks"))) + 
+      geom_line(aes(date, p_mean, colour = wl), alpha = 0.8, size = 0.8, 
+                data = knitted %>% 
+                  filter(wl %in% c(">52 weeks", 
+                                   ">65 weeks"))) +
+      geom_ribbon(aes(date, ymax = p_upper, ymin = p_lower), 
+                  fill="slategray3", alpha=.3,
+                  data = knitted %>% filter(wl %in% ">52 weeks")) +
+      geom_ribbon(aes(date, ymax = p_upper, ymin = p_lower), 
+                  fill="slategray3", alpha=.3,
+                  data = knitted %>% filter(wl %in% ">65 weeks")) +
+      geom_vline(data = wl_prep, xintercept = train_halt,
+                 linetype = "dashed", colour = "grey50",
+                 size = 0.8, alpha = 0.8) +
+      geom_vline(data = wl_prep, xintercept = train_init,
+                 linetype = "dashed", colour = "grey50",
+                 size = 0.8, alpha = 0.8) +
+      geom_text(data = wl_prep, aes(x = train_period_date, y = Inf,
+                                    label = train_period_label),
+                vjust = 1.5, size = 4.5, colour = "grey40") +
+      scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
+      plot_defaults_two +
+      scale_colour_manual(values = c("lightsteelblue4", "indianred4")) +
+      labs(fill = "",
+           x = "",
+           y = "Patients",
+           title = "WWL inpatient waiting list - long waiters",
+           level = "",
+           colour = "",
+           subtitle = paste0("Forecast horizon begins from ",
+                             train_halt, " and extends for ", h, " days"),
+           caption = paste0("Training period is the set of data fed into the model to generate the forecast
+                                  Training period is from ", train_init,
+                            " to ", yesterday,
+                            "\nHorizon lines depict mean predicted patient number
+                                  Shaded regions depict 80% prediction interval"))
+    
+    # Save plot
+    ggsave(here("plots", "all_spec_wl", "longwaiter_wl.jpg"), 
+           device = "jpg", width = 14, height = 10)
+    
+    # Print plot
+    print(plot_lw)
+    
+    
+}
+
 
 # --------------
 spec_forecast(wl_type, speciality)
 # --------------
 
 
+# ------------------------------------------------------------------------------
 #####
 # Compute forecast distributions from future sample paths and create 
              # fable object

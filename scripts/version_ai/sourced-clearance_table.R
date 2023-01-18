@@ -38,19 +38,28 @@ lw_table <- lw_clear %>%
          percent_change = if_else(!(is.na(clear_date)), 
                                   as.numeric(NA), 
                                   `percent_change`)) %>%
+  separate(., spec_desc, into = c("wl", "spec"), sep = "_") %>%
+  arrange(., desc(percent_change), by_group = F) %>%
   mutate(across(c("percent_change"), 
-                ~ if_else((percent_change > 0), 
+                ~ if_else((percent_change >= 0), 
                           sprintf(fmt = "%+2g %%", .x),
                           if_else((percent_change < 0), 
                                   sprintf(fmt = "%-2g %%", .x),
                                   as.character(NA))))) %>%
-  separate(spec_desc, into = c("wl", "spec"), sep = "_") %>%
   rename(., "List" = wl,
          "Speciality" = spec,
-         "Date list cleared" = clear_date,
-         "Patients (mean)" = mean) %>%
-  rename_with(., .fn = ~paste0("Change since ", train_halt), 
-              .cols = percent_change)
+         "Date list cleared" = clear_date) %>%
+  rename_with(., .fn = ~paste0("List size at ", (train_halt + h) - 1), 
+              .cols = mean) %>%
+  rename_with(., .fn = ~paste0("Difference from ", train_halt), 
+              .cols = percent_change) %>%
+  group_by(., List) %>%
+  group_split(.)
+
+# Split long waiter lists into two dataframes
+lw_52 <- as_tibble(lw_table[[1]])
+lw_65 <- as_tibble(lw_table[[2]])
+
 
 rm(lw_diff, lw_clear)
 # ------------------------------------------------------------------------------
