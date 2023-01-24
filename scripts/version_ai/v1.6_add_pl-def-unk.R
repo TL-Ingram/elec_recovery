@@ -125,7 +125,9 @@ spec_forecast <- function(wl_type, speciality) {
   # Write rds for speedy testing
   write_rds(wl_keys, here("rds", "keys", "wl_keys.rds"))
   write_rds(path_keys, here("rds", "keys", "path_keys.rds"))
-  
+  # Read rds for speedy testing
+  wl_keys <- read_rds(here("rds", "keys", "wl_keys.rds"))
+  path_keys <- read_rds(here("rds", "keys", "path_keys.rds"))
   
   # Create long waiters "clearance date" table
   source(here("scripts", "version_ai", "sourced-clearance_table.R"))
