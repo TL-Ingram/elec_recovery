@@ -59,6 +59,7 @@ spec_forecast <- function(wl_type, speciality) {
          # Write historic paths to list
          list_wl[[paste0(i, "_", j)]] <- wl_prep
          wl_keys <- bind_rows(list_wl, .id = "spec_desc")
+
          
       # Filter to init date, filling date gaps and imputing missing wl size
          writeLines(paste0("Waiting list: ", i,
