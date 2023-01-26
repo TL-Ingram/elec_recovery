@@ -58,7 +58,7 @@ spec_forecast <- function(wl_type, speciality) {
          
          # Write historic paths to list
          list_wl[[paste0(i, "_", j)]] <- wl_prep
-         wl_keys <- bind_rows(list_wl, .id = "spec_desc")
+         wl_keys <- bind_rows(list_wl)
 
          
       # Filter to init date, filling date gaps and imputing missing wl size
@@ -118,7 +118,7 @@ spec_forecast <- function(wl_type, speciality) {
            
                # Write forecast paths to list
              list_paths[[paste0(i, "_", j)]] <- cont_test
-             path_keys <- bind_rows(list_paths, .id = "spec_desc")
+             path_keys <- bind_rows(list_paths)
              writeLines(c(""))
          }
        }

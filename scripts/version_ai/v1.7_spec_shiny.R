@@ -37,20 +37,16 @@ h = 365
 #####
 # Source forecast outputs for each speciality
 wl_adj = c("wl_keys", "path_keys")
-for(w in wl_adj) {
-  test1 <- w %>%
-    select(-(`wl`)) %>%
-    separate(spec_desc, into = c("wl", "speciality"), sep="_(?=[^_]+$)")
-}
 
-path <- path_keys %>%
-  select(-(wl)) %>%
-  separate(spec_desc, into = c("wl", "speciality"), sep="_(?=[^_]+$)")
-lapply(str_split(df.list, "_") %>% map_dbl(`[`, 2))
+ldf <- list(wl_keys, path_keys)
 
-ldf2 <- map(df.list, mutate, v7 = str_split_fixed(string = spec_desc, pattern = "_(?=[^_]+$)", n = 1)
-              , ~ select(., -wl))
-map(data, ~ select(., -mpg)))
+ldf_temp <- map(ldf, mutate, v7 = str_split(string = spec_desc, pattern = "_"))
+ldf_temp <- map(ldf, mutate, v7 = str_split_fixed(spec_desc, "_(?!.*_)", n = 2))
+ready <- map(ldf_temp, .f = list(. %>% select(-spec_desc)))
+all <- bind_rows(list(ready)) %>%
+  rename("list" = v7[,1],
+         "speciality" = v7[,2])
+?bind_rows
 
 # continue working on making this do select over the list of dataframes
 # cont work on making output of each individual spec forecast work in shiny
