@@ -11,40 +11,50 @@ library(shiny)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
+    titlePanel("Elective recovery: forecast"),
+    fluidRow(
+        column(2,
+                uiOutput('selectUI'),
+                uiOutput("selectUI2"), # this is to have the list of places
+            ), 
+        column(9,
+                plotOutput("plot"))
+            )
         )
-    )
-)
 
+wl_keys$wl <- as.factor(wl_keys$wl)
+wl_keys$spec_desc <- as.factor(wl_keys$spec_desc)
 # Define server logic required to draw a histogram
-server <- function(input, output) {
-
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
+server <- function(input, output, session) {
+    data <- reactive({
+        return(wl_keys)
     })
+    wl_choices <- reactive({
+        choices <- levels(data()$wl)
+        return(choices)
+    })
+    spec_choices <- reactive({
+        choices <- levels(data()$spec_desc)
+        return(choices)
+    })
+    output$selectUI <- renderUI({
+        selectInput("wl", "wl variable", choices = wl_choices()) 
+    })
+    output$selectUI2 <- renderUI({
+        selectInput("spec_desc", "spec variable", choices = spec_choices())
+    })
+    data_filtered <- reactive({
+        req(input$wl)
+        df <-  data() %>%
+            filter(spec_desc %in% input$spec_desc,
+                   wl %in% input$wl)
+        return(df)
+    })
+    
+    output$plot <- renderPlot({
+        ggplot(data = data_filtered()) +
+            geom_line(aes(x = date, y = patients))
+    }, res = 75)
 }
 
 # Run the application 

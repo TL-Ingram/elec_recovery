@@ -32,7 +32,7 @@ train_period_label = "Training period"
 train_period_days = as.numeric(train_halt - train_init)/2
 train_period_date = train_init + train_period_days
 yesterday = train_halt - 1
-h = 365
+h = 100
 # h = as.numeric(date("2025-12-31") - train_halt)
 # wl_type = c("Planned", "Inpatient_wl")
 # i = c("Planned", "Inpatient_wl")
@@ -75,7 +75,7 @@ spec_forecast <- function(wl_type, speciality) {
       
       
          # Script continuance test
-         if(dim(wl_ready)[1] >= 10) {
+         if(dim(wl_ready)[1] >= 5) {
            writeLines(paste0("Building models and running simulations..."))
         
         
@@ -109,7 +109,8 @@ spec_forecast <- function(wl_type, speciality) {
            cont_test <- sim_paths %>%
              filter(.model == "combination") %>%
              mutate(.sim = if_else(.sim < 1, 0, .sim),
-                    wl = i) %>%
+                    wl = i,
+                    spec_desc = j) %>%
              select(-(.model)) %>%
              as_tibble(.)
            
