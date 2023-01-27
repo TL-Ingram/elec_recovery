@@ -32,39 +32,51 @@ train_period_days = as.numeric(train_halt - train_init)/2
 train_period_date = train_init + train_period_days
 yesterday = train_halt - 1
 h = 365
-
+# wl_type = "Planned"
+# speciality = "Gastroenterology"
 # ------------------------------------------------------------------------------
 #####
-# Source forecast outputs for each speciality
-# wl_adj = c("wl_keys", "path_keys")
-# 
-# ldf <- list(wl_keys, path_keys)
-
-# ldf_temp <- map(ldf, mutate, v7 = str_split(string = spec_desc, pattern = "_"))
-# ldf_temp <- map(ldf, mutate, v7 = str_split_fixed(spec_desc, "_(?!.*_)", n = 2))
-# ready <- map(ldf_temp, .f = list(. %>% select(-spec_desc)))
-
-
-# continue working on making this do select over the list of dataframes
-# cont work on making output of each individual spec forecast work in shiny
-
-       
-
-          # Compute forecast distributions from future sample paths and create 
-          # fable object
-          sim_results <- sim_paths %>%
-            as_tibble(.) %>%
-            mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
-            group_by(date, .model) %>%
-            summarise(dist = distributional::dist_sample(list(.sim))) %>%
-            ungroup() %>%
-            as_fable(index=date, key=.model, distribution=dist, 
-                     response="patients")
+list_fable <- list()
+for(i in wl_type) {
+    fable_x <- path_keys %>%
+      filter(., wl == "Planned")
+    # Filter to speciality
+    for (j in speciality) {
+      fable_xx <- fable_x %>%
+        extract(spec_desc, into = c("temp", "spec_desc"), "(.*)_([^_]+)$") %>%
+        select(-(temp)) %>%
+        filter(., spec_desc == "Gastroenterology")
+      
+      sim_results <- fable_xx %>%
+        as_tibble(., index = "date") %>%
+        mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
+        group_by(date, spec_desc) %>%
+        summarise(dist = distributional::dist_sample(list(.sim)), .groups = "drop_last") %>%
+        ungroup(.) %>%
+        as_fable(index=date, key=spec_desc, distribution=dist, 
+                 response="patients")
+      
+      # Write historic paths to list
+      list_fable[[paste0(i, "_", j)]] <- sim_results
+      
+      list_fable[1]
+      # sim_keys <- bind_rows(list_fable)
+    }
+}
+          # # Compute forecast distributions from future sample paths and create 
+          # # fable object
+          # sim_results <- sim_paths %>%
+          #   as_tibble(.) %>%
+          #   mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
+          #   group_by(date, .model) %>%
+          #   summarise(dist = distributional::dist_sample(list(.sim))) %>%
+          #   ungroup() %>%
+          #   as_fable(index=date, key=.model, distribution=dist, 
+          #            response="patients")
 
           # Plot results over-laid on wl and filter for combination model
           sim_results %>%
-            filter(.model == "combination") %>%
-            autoplot(wl_prep, level = 80, size = 0.6, alpha = 0.9) +
+            autoplot() #wl_prep, level = 80, size = 0.6, alpha = 0.9) +
             geom_line(data = wl_prep, aes(x = date, y = patients), size = 0.6,
                       alpha = 0.7, colour = "grey50") +
             geom_vline(data = wl_prep, xintercept = train_halt, 
