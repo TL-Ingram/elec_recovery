@@ -24,17 +24,21 @@ ui <- fluidPage(
 
 wl_keys$wl <- as.factor(wl_keys$wl)
 wl_keys$spec_desc <- as.factor(wl_keys$spec_desc)
+wl_keys$wl <- as.factor(wl_keys$wl)
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
-    data <- reactive({
+    data_wl <- reactive({
         return(wl_keys)
     })
+    data_path <- reactive({
+        return(path_keys)
+    })
     wl_choices <- reactive({
-        choices <- levels(data()$wl)
+        choices <- levels(data_wl()$wl)
         return(choices)
     })
     spec_choices <- reactive({
-        choices <- levels(data()$spec_desc)
+        choices <- levels(data_wl()$spec_desc)
         return(choices)
     })
     output$selectUI <- renderUI({
@@ -45,15 +49,15 @@ server <- function(input, output, session) {
     })
     data_filtered <- reactive({
         req(input$wl)
-        df <-  data() %>%
+        df <-  data_wl() %>%
             filter(spec_desc %in% input$spec_desc,
                    wl %in% input$wl)
         return(df)
     })
+
     
     output$plot <- renderPlot({
-        ggplot(data = data_filtered()) +
-            geom_line(aes(x = date, y = patients))
+        sim_results %>% autoplot(data_filtered[, "patients"])
     }, res = 75)
 }
 

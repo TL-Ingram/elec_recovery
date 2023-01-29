@@ -1,6 +1,6 @@
 #####
 # Load packages
-shelf(tidyverse, here, lubridate, forecast, fpp3, hrbrthemes)
+shelf(tidyverse, here, lubridate, forecast, fpp3, fpp2, hrbrthemes)
 
 
 # ------------------------------------------------------------------------------
