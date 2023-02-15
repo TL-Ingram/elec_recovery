@@ -25,8 +25,8 @@ param_now <- param_mean %>%
   filter(month == max(month)) %>%
   pivot_wider(-month, names_from = "names", values_from = "mean")
 
-x = 1.05
-y = 1.01
+x = 1
+y = 1
 z = 1
 
 formula = (x*param_now$additions) - (y*param_now$removals) - (z*param_now$error)
@@ -44,7 +44,17 @@ wl_keys %>%
     geom_line() +
     theme_bw()
 
-  
+
+# Bring in usual forecast
+test_knitted <- knitted %>%
+  ungroup(.) %>%
+  filter(filter %in% "forecast") %>%
+  select(2,5)
+
+
+
+
+
 # join wl_keys & xreg ----------------------------------------------------------
 dyn_fc <- left_join(parameters_xreg, wl_keys, by = "date") %>%
     select(1,8,2,3,4) %>%
