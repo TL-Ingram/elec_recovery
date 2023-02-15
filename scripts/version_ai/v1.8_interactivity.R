@@ -27,17 +27,17 @@ wl_type <- wl_comp %>%
 #####
 # Time period models trained on
 train_init = date("2022-10-17")
-train_halt = date("2023-01-17") # eventually change this to sys.date - 1
+train_halt = date("2023-02-14") # eventually change this to sys.date - 1
 train_period_label = "Training period"
 train_period_days = as.numeric(train_halt - train_init)/2
 train_period_date = train_init + train_period_days
 yesterday = train_halt - 1
 h = 100
 # h = as.numeric(date("2025-12-31") - train_halt)
-wl_type = ("Inpatient_wl")
+# wl_type = ("Inpatient_wl")
 # i = c("Planned", "Inpatient_wl")
 # j = "Haematology"
-speciality = ("Gastroenterology")
+# speciality = ("Gastroenterology")
 
 
 # ------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ speciality = ("Gastroenterology")
     # Filter to speciality
        for (j in speciality) {
          wl_prep <- wl_prepared %>%
-           filter(., spec_desc == "Colorectal Surgery")
+           filter(., spec_desc == "Gastroenterology")
          
          # Write historic paths to list
          list_wl[[paste0(i, "_", j)]] <- wl_prep
@@ -283,6 +283,7 @@ spec_forecast(wl_type, speciality)
              # fable object
            
              sim_results <- path_keys %>%
+               filter(wl == ">65") %>%
                as_tibble(., index = "date") %>%
                mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
                group_by(date, spec_desc) %>%
@@ -298,8 +299,15 @@ spec_forecast(wl_type, speciality)
                # as_fable(index="date", key="spec_desc", dist  = wl, response = "patients")
              
              #Plot results over-laid on wl and filter for combination model
-
+wl_keys %>%
+               filter(spec_desc == "Urology") %>%
+               filter(wl == ">65") %>%
+               ggplot(aes(x = date, y = patients)) +
+               geom_line()
+             
+             
           sim_results %>%
+               filter(spec_desc == "Urology") %>%
             autoplot()#, level = 80, size = 0.6, alpha = 0.9) #+
           #   geom_line(data = wl_prep, aes(x = date, y = patients), size = 0.6,
           #             alpha = 0.7, colour = "grey50") +

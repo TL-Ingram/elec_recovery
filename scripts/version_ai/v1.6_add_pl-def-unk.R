@@ -12,7 +12,7 @@ data <- read_csv(here("data", "hist_wl.csv"))
 speciality <- data %>%
   distinct(spec_desc) %>%
   pull(spec_desc)
-
+wl_type = c(">65", ">52")
 # Source scripts
 source(here("scripts", "version_ai", "sourced-wl_cleaning.R"))
 
@@ -26,13 +26,13 @@ wl_type <- wl_comp %>%
 # ------------------------------------------------------------------------------
 #####
 # Time period models trained on
-train_init = date("2022-10-17")
-train_halt = date("2023-01-17") # eventually change this to sys.date - 1
+train_init = date("2022-12-14")
+train_halt = date("2023-02-14") # eventually change this to sys.date - 1
 train_period_label = "Training period"
 train_period_days = as.numeric(train_halt - train_init)/2
 train_period_date = train_init + train_period_days
 yesterday = train_halt - 1
-h = 100
+h = 411
 # h = as.numeric(date("2025-12-31") - train_halt)
 # wl_type = c("Planned", "Inpatient_wl")
 # i = c("Planned", "Inpatient_wl")
@@ -155,6 +155,7 @@ spec_forecast <- function(wl_type, speciality) {
                 mean = mean(.sim),
                 min = quantile(.sim, 0.2)) %>%
       ungroup(.) %>%
+      filter(., !grepl("Plastic Surgery", spec_desc)) %>%
       select(-(spec_desc)) %>%
       group_by(wl, date) %>%
       summarise(p_mean = sum(`mean`),
@@ -278,59 +279,3 @@ spec_forecast(wl_type, speciality)
 
 
 # ------------------------------------------------------------------------------
-#####
-# Compute forecast distributions from future sample paths and create 
-             # fable object
-           
-             sim_results <- path_keys %>%
-               as_tibble(., index = "date") %>%
-               mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
-               group_by(date, spec_desc) %>%
-               summarise(dist = distributional::dist_sample(list(.sim)), .groups = "drop_last") %>%
-               ungroup(.) %>%
-               as_fable(index=date, key=spec_desc, distribution=dist, 
-                        response="patients")
-
-#####       
-             # test <- wl_keys %>% 
-             #   select(-(wl)) %>%
-             #   as_tibble(., key = "spec_desc", index = "date") #%>%
-               # as_fable(index="date", key="spec_desc", dist  = wl, response = "patients")
-             
-             #Plot results over-laid on wl and filter for combination model
-
-          sim_results %>%
-            autoplot()#, level = 80, size = 0.6, alpha = 0.9) #+
-          #   geom_line(data = wl_prep, aes(x = date, y = patients), size = 0.6,
-          #             alpha = 0.7, colour = "grey50") +
-          #   geom_vline(data = wl_prep, xintercept = train_halt,
-          #              linetype = "dashed", colour = "grey50",
-          #              size = 0.5, alpha = 0.8) +
-          #   geom_vline(data = wl_prep, xintercept = train_init,
-          #              linetype = "dashed", colour = "grey50",
-          #              size = 0.5, alpha = 0.8) +
-          #   geom_text(data = wl_prep, aes(x = train_period_date, y = Inf,
-          #                                 label = train_period_label),
-          #             vjust = 1.5, size = 2.5, colour = "grey40") +
-          #   scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
-          #   plot_defaults +
-          #   labs(fill = "",
-          #        x = "",
-          #        y = "Patients",
-          #        title = j,
-          #        level = "",
-          #        subtitle = paste0("Forecast horizon begins from ",
-          #                          train_halt, " and extends for ", h, " days"),
-          #        caption = paste0("Training period is the set of data fed into the model to generate the forecast
-          #                         Training period is from ", train_init,
-          #                         " to ", yesterday,
-          #                         "\nBlue line depicts mean predicted patient number
-          #                         Shaded region depicts 80% prediction interval"))
-
-          # # Save plot
-          # file_name <- paste0(i, "_", j)
-          # ggsave(here("plots", "combi_plots", filename=paste0(
-          #   file_name, ".png")),
-          #   device = "png")
-          
-          # Create csv of history plus forecast horizon

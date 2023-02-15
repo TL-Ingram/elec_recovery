@@ -21,15 +21,26 @@ param_mean %>%
   theme_bw()
   
 # Rates
-param_now <- param_mean %>%
+param_xyz <- param_mean %>%
   filter(month == max(month)) %>%
   pivot_wider(-month, names_from = "names", values_from = "mean")
 
-x = 1
-y = 1
-z = 1
+param_n <- wl_keys %>%
+  filter(date < yesterday) %>%
+  mutate(month = floor_date(date, unit = "month")) %>%
+  filter(month == max(month)) %>%
+  group_by(month) %>%
+  summarise(mean = mean(patients)) %>%
+  ungroup(.) %>%
+  pull(mean)
 
-formula = (x*param_now$additions) - (y*param_now$removals) - (z*param_now$error)
+x = 1
+y = 1.8
+z = 1
+n = param_n
+
+formula = ((((x*param_now$additions) - (y*param_now$removals) - (z*param_now$error)))) 
+
 
 # normalise formula to 1 as a baseline position, then work out 
 
@@ -49,8 +60,18 @@ wl_keys %>%
 test_knitted <- knitted %>%
   ungroup(.) %>%
   filter(filter %in% "forecast") %>%
-  select(2,5)
+  select(2,5) %>%
+  mutate(change = p_mean+formula) %>%
+  mutate(change = if_else(date == (yesterday + 1), p_mean, change))
 
+test_knitted %>%
+  ggplot() +
+  geom_line(aes(x = date, y = p_mean)) +
+  geom_line(aes(x = date, y = change)) +
+  theme_bw()
+
+
+# what needs doing is alter the model_frame to incorporate the formula at that stage. Then I can use the sim function to generate individual sims with the parameters incorporated! This can then be modified dynamically?
 
 
 
