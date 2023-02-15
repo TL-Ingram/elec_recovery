@@ -4,8 +4,8 @@ library(stringr)
 library(lubridate)
 library(odbc)
 
-source("db_connect_functions.R")
-source("helper_functions.R")
+source(here("scripts/archive/db_connect_functions.R"))
+source(here("scripts/archive/helper_functions.R"))
 complete_update = TRUE
 
 
@@ -15,6 +15,7 @@ specialty_names = hsql(q = q_spec, db = "nhs_reporting", server = "WWLDWSQL1") %
 specialty_names$spec_desc <- trimws(specialty_names$spec_desc, which = c("right"))
 
 specialties <- specialty_names$spec_desc
+specialties <- "Gastroenterology"
 divisions = specialty_names$division
 # specialty = "Colorectal Surgery"
 ###### PARAMS #####

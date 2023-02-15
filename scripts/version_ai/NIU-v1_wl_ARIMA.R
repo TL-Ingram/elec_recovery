@@ -8,7 +8,7 @@ data <- read_csv(here("data", "hist_wl.csv"))
 speciality <- data %>%
   distinct(spec_desc) %>%
   pull(spec_desc)
-# speciality_name = "Gastroenterology"
+speciality_name = "Gastroenterology"
 
 ##### loop to output graphs for each speciality
 for (speciality_name in speciality) {
@@ -21,7 +21,7 @@ wl <- data %>%
   group_by(date) %>%
   summarise(patients = n()) %>%
   left_join(parameters_test, by = "date") %>%
-  filter(date > "2022-0-01")
+  filter(date > "2022-10-01")
 
 (paste0(speciality_name, "ok")) <- data %>%
   filter(., spec_desc == speciality_name,
@@ -68,10 +68,10 @@ dev.off()
 # think about adding covariate columns for additions, removals and ROTT. The number of rows for this = horizon. This should be usable for reactivity too!
 ## create matrix with forecasted covariates for future?
 # created matrix with them now. Just need to add
-# parameters_test <- parameters %>%
-#   mutate(dt = ymd(dt)) %>%
-#   filter(speciality == "Gastroenterology") %>%
-#   rename("date" = dt)
+parameters_test <- parameters %>%
+  mutate(dt = ymd(dt)) %>%
+  filter(speciality == "Gastroenterology") %>%
+  rename("date" = dt)
 #   ts()
 # ?autoplot
 # ts()
