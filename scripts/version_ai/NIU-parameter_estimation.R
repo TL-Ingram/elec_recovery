@@ -3,6 +3,8 @@ library(ggplot2)
 library(stringr)
 library(lubridate)
 library(odbc)
+library(hsql)
+library(here)
 
 source(here("scripts/archive/db_connect_functions.R"))
 source(here("scripts/archive/helper_functions.R"))
@@ -15,7 +17,6 @@ specialty_names = hsql(q = q_spec, db = "nhs_reporting", server = "WWLDWSQL1") %
 specialty_names$spec_desc <- trimws(specialty_names$spec_desc, which = c("right"))
 
 specialties <- specialty_names$spec_desc
-specialties <- "Gastroenterology"
 divisions = specialty_names$division
 # specialty = "Colorectal Surgery"
 ###### PARAMS #####
@@ -73,7 +74,7 @@ for (specialty in specialties){
     months = NA,
     prob = NA
   )
-  
+specialty = "Gastroenterology"  
   for (d in 1:length(date_from)) {
     #########################
     ######### DTAs ##########
@@ -441,7 +442,8 @@ AND removed_date_dt BETWEEN CAST('",
     
     #Admissions
     adms_daily <- adms  %>%
-      group_by(admission_date) %>%
+      mutate(covid_recovery_priority = grepl(c("[[Priority*]]"), "Active_wl", covid_recovery_priority)) #%>%
+      group_by(admission_date, ,covid_recovery_priority) %>%
       summarise(adms = n()) %>%
       ungroup() %>%
       rename(dt = admission_date) %>%

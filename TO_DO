@@ -77,3 +77,13 @@ make spec graphs into shiny
 
 
 Try doing shiny for just one spec
+
+
+16/02
+Add parameters before running the model. Run separate simulation with weighted parameters added.
+Pull parameters first for each speciality individually.
+Test
+
+17/02
+Minus vector results by the date as I think it's currently just doing it by the order of the frame.
+Line 127 v1.8

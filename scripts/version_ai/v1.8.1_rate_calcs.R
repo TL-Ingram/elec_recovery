@@ -4,6 +4,7 @@
 #####
 # Plot graphs of each predictor ------------------------------------------------
 # write_rds(parameters_test, here("csv", "parameters", "gastro.rds"))
+parameters_test <- read_rds(here("csv", "parameters", "gastro.rds"))
 parameters_xreg = parameters_test
 parameters_gastro <- pivot_longer(parameters_test, cols = c("adms", "dtas", "rott"), 
                                   names_to = "names", values_to = "values") %>%
@@ -35,11 +36,11 @@ param_n <- wl_keys %>%
   pull(mean)
 
 x = 1
-y = 1.8
+y = 1
 z = 1
 n = param_n
 
-formula = ((((x*param_now$additions) - (y*param_now$removals) - (z*param_now$error)))) 
+formula = ((((x*param_xyz$additions) - (y*param_xyz$removals) - (z*param_xyz$error)))) 
 
 
 # normalise formula to 1 as a baseline position, then work out 

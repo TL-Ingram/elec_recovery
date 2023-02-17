@@ -26,7 +26,7 @@ wl_type <- wl_comp %>%
 # ------------------------------------------------------------------------------
 #####
 # Time period models trained on
-train_init = date("2022-10-17")
+train_init = date("2022-12-17")
 train_halt = date("2023-02-14") # eventually change this to sys.date - 1
 train_period_label = "Training period"
 train_period_days = as.numeric(train_halt - train_init)/2
@@ -34,10 +34,10 @@ train_period_date = train_init + train_period_days
 yesterday = train_halt - 1
 h = 100
 # h = as.numeric(date("2025-12-31") - train_halt)
-# wl_type = ("Inpatient_wl")
+wl_type = ("Inpatient_wl")
 # i = c("Planned", "Inpatient_wl")
 # j = "Haematology"
-# speciality = ("Gastroenterology")
+speciality = ("Gastroenterology")
 
 
 # ------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ h = 100
          if(dim(wl_ready)[1] >= 5) {
            writeLines(paste0("Building models and running simulations..."))
         
-        
+
         
            # Filter to halt date
            train_set <- wl_ready %>%
@@ -98,19 +98,35 @@ h = 100
                arima = ARIMA(patients, stepwise = F, approximation = F, trace = F),
                nnar = NNETAR(patients, stepwise = F, trace = F)
                ) %>%
-             mutate(combination = (ets + stlf + arima + nnar)/4)
-      
+             mutate(combination = (ets + stlf + arima + nnar)/4) %>%
+             mutate(combination_2 = (ets + stlf + arima + nnar)/4)
+
            # Generate future sample paths
            sim_paths <- model_frame %>%
-             generate(h = h, times = 15)
+             generate(h = h, times = 50)
 
-        
+vector <- c(0)
+for (i in seq_along(1:h)) {
+  if (x > 0) {
+  vector <- c(vector, ((x + vector[i-1]) - (i^(1/3))))
+  } else {
+    vector <- c(vector, ((x + vector[i-1]) + (i^(1/3))))
+  }
+}
+vector
+xxx <- data.frame(
+  dim = 1:h,
+  vector)
+plot(xxx)
+
+# Line 127 needs to do .sim + vector grouped by the date and rep
            # Script continuance test
            cont_test <- sim_paths %>%
-             filter(.model == "combination") %>%
+             filter(.model == c("combination", "combination_2")) %>%
              mutate(.sim = if_else(.sim < 1, 0, .sim),
-                    wl = i,
-                    spec_desc = j) %>%
+                    .sim = if_else(.model == "combination_2", .sim+vector, .sim),
+                    wl = "gastroenterology",
+                    spec_desc = "Inpatient_wl") %>%
              select(-(.model)) %>%
              as_tibble(.)
            
@@ -283,13 +299,13 @@ spec_forecast(wl_type, speciality)
              # fable object
            
              sim_results <- path_keys %>%
-               filter(wl == ">65") %>%
+               # filter(wl == "") #%>%
                as_tibble(., index = "date") %>%
                mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
-               group_by(date, spec_desc) %>%
+               group_by(.model, date, spec_desc) %>%
                summarise(dist = distributional::dist_sample(list(.sim)), .groups = "drop_last") %>%
                ungroup(.) %>%
-               as_fable(index=date, key=spec_desc, distribution=dist, 
+               as_fable(index=date, key=.model, distribution=dist, 
                         response="patients")
 
 #####       
@@ -299,16 +315,16 @@ spec_forecast(wl_type, speciality)
                # as_fable(index="date", key="spec_desc", dist  = wl, response = "patients")
              
              #Plot results over-laid on wl and filter for combination model
-wl_keys %>%
-               filter(spec_desc == "Urology") %>%
-               filter(wl == ">65") %>%
-               ggplot(aes(x = date, y = patients)) +
-               geom_line()
+# wl_keys %>%
+#                filter(spec_desc == "Urology") %>%
+#                filter(wl == ">65") %>%
+#                ggplot(aes(x = date, y = patients)) +
+#                geom_line()
              
              
           sim_results %>%
-               filter(spec_desc == "Urology") %>%
-            autoplot()#, level = 80, size = 0.6, alpha = 0.9) #+
+               # filter(spec_desc == "Urology") %>%
+            autoplot(wl_keys, level = F)#, level = 80, size = 0.6, alpha = 0.9) #+
           #   geom_line(data = wl_prep, aes(x = date, y = patients), size = 0.6,
           #             alpha = 0.7, colour = "grey50") +
           #   geom_vline(data = wl_prep, xintercept = train_halt,
