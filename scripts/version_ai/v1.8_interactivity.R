@@ -104,15 +104,22 @@ speciality = ("Gastroenterology")
            # Generate future sample paths
            sim_paths <- model_frame %>%
              generate(h = h, times = 50)
+formula = -2
+w = k*exp(-time_elapsed/t)
+h = 300
 
 vector <- c(0)
 for (i in seq_along(1:h)) {
-  if (x > 0) {
-  vector <- c(vector, ((x + vector[i-1]) - (i^(1/3))))
+  if (formula > 0) {
+  vector <- c(vector, ((formula + (vector[i-1]-(1*exp(-i/100))))))
   } else {
-    vector <- c(vector, ((x + vector[i-1]) + (i^(1/3))))
+    vector <- c(vector, ((formula + (vector[i-1]+(1*exp(-i/100))))))
   }
 }
+
+# y = ab^x (x = predictor variable. a,b = regreessions coeff, y = response)
+# x = h (i in this case)
+
 vector
 xxx <- data.frame(
   dim = 1:h,
