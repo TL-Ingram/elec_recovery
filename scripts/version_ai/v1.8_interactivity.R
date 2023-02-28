@@ -106,7 +106,7 @@ speciality = ("Gastroenterology")
              generate(h = h, times = 50)
 formula = -2
 w = k*exp(-time_elapsed/t)
-h = 300
+h = 100
 
 vector <- c(0)
 for (i in seq_along(1:h)) {
@@ -117,9 +117,6 @@ for (i in seq_along(1:h)) {
   }
 }
 
-# y = ab^x (x = predictor variable. a,b = regreessions coeff, y = response)
-# x = h (i in this case)
-
 vector
 xxx <- data.frame(
   dim = 1:h,
@@ -128,14 +125,23 @@ plot(xxx)
 
 # Line 127 needs to do .sim + vector grouped by the date and rep
            # Script continuance test
-           cont_test <- sim_paths %>%
-             filter(.model == c("combination", "combination_2")) %>%
-             mutate(.sim = if_else(.sim < 1, 0, .sim),
-                    .sim = if_else(.model == "combination_2", .sim+vector, .sim),
-                    wl = "gastroenterology",
-                    spec_desc = "Inpatient_wl") %>%
-             select(-(.model)) %>%
-             as_tibble(.)
+sim_paths_mod <- sim_paths %>%
+  filter(.model == c("combination")) %>%
+  mutate(.sim = if_else(.sim < 1, 0, .sim))
+           
+cont_test <- sim_paths %>%
+             filter(.model == c("combination_2")) %>%
+             transform(., dim=match(date, unique(date))) %>%
+             mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
+             group_by(dim) %>%
+             left_join(., y = xxx, by = "dim") %>%
+             mutate(.sim = (.sim + vector)) %>%
+             ungroup(.) %>%
+             select(-(c(vector, dim))) %>%
+  bind_rows(sim_paths_mod) %>%
+  mutate(wl = "gastroenterology",
+         spec_desc = "Inpatient_wl") %>%
+  as_tibble(.)
            
            
            # if(dim(cont_test)[1] != 0) {
@@ -306,7 +312,6 @@ spec_forecast(wl_type, speciality)
              # fable object
            
              sim_results <- path_keys %>%
-               # filter(wl == "") #%>%
                as_tibble(., index = "date") %>%
                mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
                group_by(.model, date, spec_desc) %>%
@@ -327,11 +332,10 @@ spec_forecast(wl_type, speciality)
 #                filter(wl == ">65") %>%
 #                ggplot(aes(x = date, y = patients)) +
 #                geom_line()
-             
+             duplicates(sim_results)
              
           sim_results %>%
-               # filter(spec_desc == "Urology") %>%
-            autoplot(wl_keys, level = F)#, level = 80, size = 0.6, alpha = 0.9) #+
+            autoplot(wl_keys, level = 80)#, level = 80, size = 0.6, alpha = 0.9) #+
           #   geom_line(data = wl_prep, aes(x = date, y = patients), size = 0.6,
           #             alpha = 0.7, colour = "grey50") +
           #   geom_vline(data = wl_prep, xintercept = train_halt,

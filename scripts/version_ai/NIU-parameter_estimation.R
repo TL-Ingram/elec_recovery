@@ -1,55 +1,19 @@
-library(dplyr)
-library(ggplot2)
-library(stringr)
-library(lubridate)
-library(odbc)
-library(hsql)
-library(here)
-
 source(here("scripts/archive/db_connect_functions.R"))
 source(here("scripts/archive/helper_functions.R"))
-complete_update = TRUE
 
+specialities <- speciality
 
-q_spec <-
-  "SELECT DISTINCT spec_desc, division from [nhs_reporting].[dbo].[reporting_Inpatient_Waiting_List];"
-specialty_names = hsql(q = q_spec, db = "nhs_reporting", server = "WWLDWSQL1") %>% filter(spec_desc != "System Generated")
-specialty_names$spec_desc <- trimws(specialty_names$spec_desc, which = c("right"))
-
-specialties <- specialty_names$spec_desc
-divisions = specialty_names$division
-# specialty = "Colorectal Surgery"
 ###### PARAMS #####
-# if (complete_update) {
-#   date_from = c(Sys.Date() - 90 - 3,
-#                 seq(
-#                   from = as.Date("2022-09-01"),
-#                   to =  as.Date("2023-12-01"),
-#                   by = "month"
-#                 ))
-#   date_to = c(Sys.Date() - 3, seq(
-#     from = as.Date("2022-10-01"),
-#     to =  as.Date("2023-12-01"),
-#     by = "month"
-#   ) - 1)
-#   
-#   labels = c("Current", paste0(
-#     lubridate::month(date_from[-1], label = T),
-#     lubridate::year(date_from[-1])
-#   ))
-# } else{
-  date_from = c(Sys.Date() - 365 - 3)
+  date_from = c(Sys.Date() - 60 - 3)
   date_to = c(Sys.Date() - 3)
   labels = c("Current")
-# }
 
 
-for (specialty in specialties){
+for (specialty in speciality){
   
   ##  Initialise data frames  ###
   parameters <-
     data.frame(
-      division = NA,
       specialty = NA,
       time_period = NA,
       metric = NA,
@@ -58,7 +22,6 @@ for (specialty in specialties){
     )
   
   times_to_dta <- data.frame(
-    division = NA,
     specialty = NA,
     time_period = NA,
     priority = NA,
@@ -67,14 +30,13 @@ for (specialty in specialties){
   )
   
   times_to_planned <- data.frame(
-    division = NA,
     specialty = NA,
     time_period = NA,
     priority = 'Planned',
     months = NA,
     prob = NA
   )
-specialty = "Gastroenterology"  
+
   for (d in 1:length(date_from)) {
     #########################
     ######### DTAs ##########
@@ -85,7 +47,7 @@ SELECT DISTINCT
 internal_number,
 MIN(i.priority_local_code) AS covid_recovery_priority
 FROM [nhs_reporting].[dbo].[reporting_Inpatient_Waiting_List] i
-where snapshot_date_dt > CAST('2022-01-01' AS DATE)
+where snapshot_date_dt > CAST('2023-01-01' AS DATE)
 GROUP BY internal_number)
 SELECT DISTINCT
 i.internal_number
@@ -180,7 +142,6 @@ AND decision_to_admit_date_dt BETWEEN CAST('",
     parameters <- rbind(
       parameters,
       data.frame(
-        division = dplyr::filter(specialty_names, spec_desc == specialty)$division,
         specialty = specialty,
         time_period = labels[d],
         metric = "demand_mean",
@@ -189,7 +150,7 @@ AND decision_to_admit_date_dt BETWEEN CAST('",
       )
     )
     
-    if (date_from[d] >= as.Date("2022-01-01")) {
+    if (date_from[d] >= as.Date("2023-01-01")) {
       ## priorities
       total = dim(dplyr::filter(
         dtas,
@@ -222,7 +183,6 @@ AND decision_to_admit_date_dt BETWEEN CAST('",
         parameters <- rbind(
           parameters,
           data.frame(
-            division = dplyr::filter(specialty_names, spec_desc == specialty)$division,
             specialty = specialty,
             time_period = labels[d],
             metric = "demand_priority_splits",
@@ -243,7 +203,6 @@ AND decision_to_admit_date_dt BETWEEN CAST('",
           times_to_dta <- rbind(
             times_to_dta,
             data.frame(
-              division = dplyr::filter(specialty_names, spec_desc == specialty)$division,
               specialty = specialty,
               time_period = labels[d],
               priority = c("Priority 2"),
@@ -261,7 +220,6 @@ AND decision_to_admit_date_dt BETWEEN CAST('",
           times_to_dta <- rbind(
             times_to_dta,
             data.frame(
-              division = dplyr::filter(specialty_names, spec_desc == specialty)$division,
               specialty = specialty,
               time_period = labels[d],
               priority = c("Priority 3"),
@@ -279,7 +237,6 @@ AND decision_to_admit_date_dt BETWEEN CAST('",
           times_to_dta <- rbind(
             times_to_dta,
             data.frame(
-              division = dplyr::filter(specialty_names, spec_desc == specialty)$division,
               specialty = specialty,
               time_period = labels[d],
               priority = c("Priority 4"),
@@ -298,7 +255,6 @@ AND decision_to_admit_date_dt BETWEEN CAST('",
           times_to_dta <- rbind(
             times_to_dta,
             data.frame(
-              division = dplyr::filter(specialty_names, spec_desc == specialty)$division,
               specialty = specialty,
               time_period = labels[d],
               priority = c("Unknown"),
@@ -347,7 +303,6 @@ AND decision_to_admit_date_dt BETWEEN CAST('",
         times_to_planned <- rbind(
           times_to_planned,
           data.frame(
-            division = dplyr::filter(specialty_names, spec_desc == specialty)$division,
             specialty = specialty,
             time_period = labels[d],
             priority = c("Planned"),
@@ -371,7 +326,7 @@ SELECT DISTINCT
 internal_number,
 MIN(i.priority_local_code) AS covid_recovery_priority
 FROM [nhs_reporting].[dbo].[reporting_Inpatient_Waiting_List] i
-where snapshot_date_dt > CAST('2022-01-01' AS DATE)
+where snapshot_date_dt > CAST('2023-01-01' AS DATE)
 GROUP BY internal_number)
 SELECT DISTINCT
   i.internal_number
@@ -442,8 +397,8 @@ AND removed_date_dt BETWEEN CAST('",
     
     #Admissions
     adms_daily <- adms  %>%
-      mutate(covid_recovery_priority = grepl(c("[[Priority*]]"), "Active_wl", covid_recovery_priority)) #%>%
-      group_by(admission_date, ,covid_recovery_priority) %>%
+      mutate(covid_recovery_priority = grepl(c("[[Priority*]]"), "Active_wl", covid_recovery_priority)) %>%
+      group_by(covid_recovery_priority, admission_date) %>%
       summarise(adms = n()) %>%
       ungroup() %>%
       rename(dt = admission_date) %>%
@@ -458,7 +413,6 @@ AND removed_date_dt BETWEEN CAST('",
     parameters <- rbind(
       parameters,
       data.frame(
-        division = dplyr::filter(specialty_names, spec_desc == specialty)$division,
         specialty = specialty,
         time_period = labels[d],
         metric = "capacity_mean",
@@ -485,7 +439,6 @@ AND removed_date_dt BETWEEN CAST('",
     parameters <- rbind(
       parameters,
       data.frame(
-        division = dplyr::filter(specialty_names, spec_desc == specialty)$division,
         specialty = specialty,
         time_period = labels[d],
         metric = "rott_mean",
@@ -495,7 +448,7 @@ AND removed_date_dt BETWEEN CAST('",
     )
     
     
-    if (date_from[d] >= as.Date("2022-01-01")) {
+    if (date_from[d] >= as.Date("2023-01-01")) {
       ## adms priorities
       total = dim(dplyr::filter(
         adms,
@@ -528,7 +481,6 @@ AND removed_date_dt BETWEEN CAST('",
         parameters <- rbind(
           parameters,
           data.frame(
-            division = dplyr::filter(specialty_names, spec_desc == specialty)$division,
             specialty = specialty,
             time_period = labels[d],
             metric = "capacity_priority_splits",
@@ -571,7 +523,6 @@ AND removed_date_dt BETWEEN CAST('",
         parameters <- rbind(
           parameters,
           data.frame(
-            division = dplyr::filter(specialty_names, spec_desc == specialty)$division,
             specialty = specialty,
             time_period = labels[d],
             metric = "rott_priority_splits",
