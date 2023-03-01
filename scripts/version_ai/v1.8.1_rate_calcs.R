@@ -38,10 +38,11 @@ param_n <- wl_keys %>%
 x = 1
 y = 1
 z = 1
+b = 1
 n = param_n
 
 formula = ((((x*param_xyz$additions) - (y*param_xyz$removals) - (z*param_xyz$error)))) 
-
+formula
 
 # normalise formula to 1 as a baseline position, then work out 
 

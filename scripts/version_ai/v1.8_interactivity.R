@@ -38,8 +38,8 @@ wl_type = ("Inpatient_wl")
 # i = c("Planned", "Inpatient_wl")
 # j = "Haematology"
 speciality = ("Gastroenterology")
-
-
+j = "Gastroenterology"
+i = "Inpatient_wl"
 # ------------------------------------------------------------------------------
 #####
 # Produce forecast outputs, csv + plot, for each speciality
@@ -104,19 +104,15 @@ speciality = ("Gastroenterology")
            # Generate future sample paths
            sim_paths <- model_frame %>%
              generate(h = h, times = 50)
-formula = -2
-w = k*exp(-time_elapsed/t)
-h = 100
+formula = 2
+# w = k*exp(-time_elapsed/t)
+# h = 100
 
 vector <- c(0)
 for (i in seq_along(1:h)) {
-  if (formula > 0) {
-  vector <- c(vector, ((formula + (vector[i-1]-(1*exp(-i/100))))))
-  } else {
-    vector <- c(vector, ((formula + (vector[i-1]+(1*exp(-i/100))))))
+  vector <- c(vector, ((formula*(1.3*exp(-i/h))) + vector[i-1]))
   }
-}
-
+?exp
 vector
 xxx <- data.frame(
   dim = 1:h,
