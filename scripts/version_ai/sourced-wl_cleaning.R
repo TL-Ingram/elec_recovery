@@ -1,4 +1,9 @@
 #####
+# Pull speciality names into vector for looping through
+speciality <- data %>%
+  distinct(spec_desc) %>%
+  pull(spec_desc)
+
 # Filter data appropriate for the models
 data_mutate <- data %>%
   mutate(., date = dmy(date),
@@ -27,6 +32,12 @@ lw_wl <- data_mutate %>%
 
 # Bind data.frames of all groups together
 wl_comp <- bind_rows(o_wl, lw_wl)
+
+# Pull type of waiting list into vector for looping through
+wl_type <- wl_comp %>%
+  distinct(wl) %>%
+  filter(., wl != c("Deferred", "Unknown")) %>%
+  pull(wl)
 
 # clean up global env
 rm(data, data_mutate, o_wl, lw_wl)

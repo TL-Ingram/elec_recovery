@@ -305,7 +305,7 @@ AND removed_date_dt BETWEEN CAST('",
     )
   }
 }
-spec_parameters <- parameters %>%
+parameters <- parameters %>%
   drop_na() %>%
-  write_rds(here("csv", "parameters", "full", "all_spec.rds"))
+  write_rds(here("rds", "parameters", "all_spec.rds"))
 
