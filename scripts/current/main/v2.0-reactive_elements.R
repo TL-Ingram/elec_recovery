@@ -31,6 +31,7 @@ if (day(Sys.Date()) == 1 | 2 | 3) {
 }
 }
 
+
 # ------------------------------------------------------------------------------
 # Time period models trained on
 train_halt = date(max(wl_comp$date))
@@ -38,10 +39,6 @@ train_init = date(train_halt - 180)
 train_period_label = "Training period"
 param_start = date(train_halt - 30)
 h = 100
-# wl_type = ("Inpatient_wl")
-# speciality = ("Gastroenterology")
-j = "Colorectal Surgery"
-i = c("Inpatient_wl", "Planned")
 
 
 # ------------------------------------------------------------------------------
@@ -114,16 +111,15 @@ for(i in wl_type) {
       
       position = round((((param_filter$demand) - 
                            (param_filter$capacity) - 
-                           (param_filter$rott)) /
-                          (param_filter$demand + param_filter$capacity)), 
+                           (param_filter$rott))), 
                        digits = 2)
-      print(glue("{position*100}% weighting applied to model"))
+      print(glue("{position*10}% weighting applied to model"))
       
       # Create vector of weights to apply to combination_2 model
       weights_vector <- c(0)
       for (v in seq_along(1:h)) {
         weights_vector <- c(weights_vector, 
-                            ((position*(1*exp(-v/h))) + weights_vector[v-1]))
+                            ((position*(0.3*exp(-v/h))) + weights_vector[v-1]))
       }
       weights <- data.frame(
         horizon = 1:h,
