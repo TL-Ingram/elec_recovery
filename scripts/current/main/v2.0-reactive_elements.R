@@ -7,7 +7,7 @@ suppressWarnings(shelf(tidyverse, here, lubridate, forecast,
 # ------------------------------------------------------------------------------
 #####
 # Check date - if start of month pull latest data from Qlik
-if (day(Sys.Date()) == 1 | 2 | 3) {
+if (day(Sys.Date()) <= 3) {
   glue("Ensure an updated hist_wl.csv copy has been loaded")
 }
 
@@ -39,7 +39,8 @@ train_init = date(train_halt - 180)
 train_period_label = "Training period"
 param_start = date(train_halt - 30)
 h = 100
-
+speciality = c("Colorectal Surgery", "Trauma & Orthopaedics", "Urology")
+wl_type = c("Inpatient_wl", "Planned")
 
 # ------------------------------------------------------------------------------
 #####
