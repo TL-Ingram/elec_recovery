@@ -191,3 +191,8 @@ source(here("scripts", "current", "sourced_scripts",
 # Print plot
 print(plot_o)
 }
+
+
+# ------------------------------------------------------------------------------
+# Long waiters clearance times
+source(here("scripts", "current", "sourced_scripts", "sourced-clearance_table.R"))
