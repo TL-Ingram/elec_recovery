@@ -38,9 +38,9 @@ train_halt = date(max(wl_comp$date))
 train_init = date(train_halt - 180)
 train_period_label = "Training period"
 param_start = date(train_halt - 30)
-h = 100
-speciality = c("Colorectal Surgery", "Trauma & Orthopaedics", "Urology")
-wl_type = c("Inpatient_wl", "Planned")
+h = 365
+# speciality = c("Colorectal Surgery", "Trauma & Orthopaedics", "Urology")
+# wl_type = c("Inpatient_wl", "Planned")
 
 # ------------------------------------------------------------------------------
 #####
@@ -157,63 +157,37 @@ for(i in wl_type) {
         path_keys <- bind_rows(list_paths)
         print(glue("Model built"))
         
-        sim_results <- all_path %>%
-          as_tibble(., index = date) %>%
-          mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
-          group_by(.model, date, spec_desc) %>%
-          summarise(dist = distributional::dist_sample(list(.sim)), 
-                    .groups = "drop_last") %>%
-          ungroup(.) %>%
-          as_fable(index = date, key = .model, distribution = dist, 
-                   response="patients")
-
-        sim_results %>%
-          autoplot(data = wl_prep, level = 80, size = 0.6, alpha = 0.7) +
-          geom_line(data = wl_prep, aes(x = date, y = patients), size = 0.6,
-                    alpha = 0.7, colour = "grey50") +
-          geom_vline(data = wl_prep, xintercept = train_halt,
-                     linetype = "dashed", colour = "grey50",
-                     size = 0.5, alpha = 0.8) +
-          geom_vline(data = wl_prep, xintercept = train_init,
-                     linetype = "dashed", colour = "grey50",
-                     size = 0.5, alpha = 0.8) +
-          geom_vline(data = wl_prep, xintercept = param_start,
-                     linetype = "dashed", colour = "grey50",
-                     size = 0.5, alpha = 0.8) +
-          annotate("rect", xmin = train_init, xmax = train_halt, 
-                   ymin = -Inf, ymax = Inf,
-                   alpha = .1, fill = "grey75") +
-          geom_text(data = wl_prep, aes(x = (train_init + 90), 
-                                        y = Inf), 
-                    label = train_period_label,
-                    vjust = 1.5, size = 2.5, colour = "grey40") +
-          scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
-          scale_colour_discrete(guide = "none") +
-          plot_defaults +
-          labs(fill = "",
-               x = "",
-               y = "Patients",
-               title = glue("{j} - {i} list"),
-               level = "",
-               subtitle = glue("Forecast horizon begins from {train_halt} 
-                               and extends for {h} days"),
-               caption = glue("AI Training period is from {train_init}
-                              to {train_halt}
-                              Parameter weighting estimated from {param_start}
-                              to {train_halt}
-                              Blue line depicts mean predicted patient number
-                              Shaded region depicts 80% prediction interval"))
-        
-        # Save plot
-        file_name <- glue("{i}_{j}_1")
-        ggsave(here("plots", "current", "speciality_forecasts", j, 
-                    filename=paste0(file_name, ".png")), device = "png")
+        #Plot and save speciality-specific forecasts
+        source(here("scripts", "current", "sourced_scripts", 
+                    "sourced-spec_forecasts.R"))
+        spec_forecast
       }
     }
   }
 }
 
-      
-      
-      
 
+# ------------------------------------------------------------------------------
+#####
+# Write rds for speedy testing
+{
+write_rds(wl_keys, here("rds", "keys", "wl_keys.rds"))
+write_rds(path_keys, here("rds", "keys", "path_keys.rds"))
+}
+
+# # Read rds for speedy testing
+# {
+# wl_keys <- read_rds(here("rds", "keys", "wl_keys.rds"))
+# path_keys <- read_rds(here("rds", "keys", "path_keys.rds"))
+# }
+
+
+# ------------------------------------------------------------------------------
+# Join all specialities into one list and plot
+{
+source(here("scripts", "current", "sourced_scripts",
+            "sourced-overall_forecast.R"))
+
+# Print plot
+print(plot_o)
+}
