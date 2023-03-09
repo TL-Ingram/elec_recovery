@@ -1,19 +1,20 @@
-"List","Speciality","Date list cleared","List size at 2024-03-30","Difference from 2023-02-14"
-">65","Cardiology",NA,3,"+50 %"
-">65","Gynaecology",NA,44,"+46.67 %"
-">65","Oral Surgery",NA,5,"+0 %"
-">65","Trauma & Orthopaedics",NA,112,"-59.42 %"
-">65","ENT",NA,19,"-64.15 %"
-">65","Gastroenterology",NA,38,"-79.46 %"
-">65","Breast Surgery",2023-12-12,NA,NA
-">65","Colorectal Surgery",2023-05-19,NA,NA
-">65","General Medicine",2023-02-14,NA,NA
-">65","General Surgery",2023-03-28,NA,NA
-">65","Ophthalmology",2023-04-05,NA,NA
-">65","Paediatric Dentistry",2023-02-08,NA,NA
-">65","Pain Management",2023-02-14,NA,NA
-">65","Plastic Surgery",2023-02-14,NA,NA
-">65","Rheumatology",2023-02-18,NA,NA
-">65","Thoracic Medicine",2023-03-14,NA,NA
-">65","Urology",2023-03-23,NA,NA
-">65","Vascular Surgery",2024-02-08,NA,NA
+"List","Speciality","Date list cleared","List size at 2024-03-06","Difference from 2023-03-08"
+"weeks_65","Cardiology",NA,4,"+0 %"
+"weeks_65","Thoracic Medicine",NA,10,"+0 %"
+"weeks_65","Trauma & Orthopaedics",NA,85,"-38.41 %"
+"weeks_65","Breast Surgery",2023-03-31,NA,NA
+"weeks_65","Colorectal Surgery",2023-07-30,NA,NA
+"weeks_65","ENT",2023-10-09,NA,NA
+"weeks_65","Gastroenterology",2023-09-24,NA,NA
+"weeks_65","General Medicine",2023-03-08,NA,NA
+"weeks_65","General Surgery",2023-04-06,NA,NA
+"weeks_65","Gynaecology",2023-09-06,NA,NA
+"weeks_65","Haematology",2022-12-06,NA,NA
+"weeks_65","Ophthalmology",2023-03-18,NA,NA
+"weeks_65","Oral Surgery",2023-03-25,NA,NA
+"weeks_65","Paediatric Dentistry",2023-04-07,NA,NA
+"weeks_65","Pain Management",2023-04-08,NA,NA
+"weeks_65","Plastic Surgery",2023-05-14,NA,NA
+"weeks_65","Rheumatology",2023-03-08,NA,NA
+"weeks_65","Urology",2023-07-19,NA,NA
+"weeks_65","Vascular Surgery",2023-06-02,NA,NA

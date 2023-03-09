@@ -76,7 +76,7 @@ plot_o <- knitted %>%
                               Shaded region depicts 80% prediction interval"))
 
 # Save plot
-ggsave(here( "plots", "all_spec_wl", "overall_wl.jpg"), 
+ggsave(here( "plots", "current", "overall_therapeutic", "inpatient&planned_wl.jpg"), 
        device = "jpg", width = 14, height = 10)
 
 # Print plot

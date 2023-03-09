@@ -35,19 +35,25 @@ if (day(Sys.Date()) <= 3) {
 
 # ------------------------------------------------------------------------------
 # Time period models trained on
+{
 train_halt = date(max(wl_comp$date))
 train_init = date(train_halt - 180)
 train_period_label = "Training period"
 param_start = date(train_halt - 30)
-h = 50
-speciality = c("Colorectal Surgery", "Trauma & Orthopaedics", "Urology")
-wl_type = c("weeks_65", "weeks_52")
+h = 365
+speciality = c("Vascular Surgery", "Trauma & Orthopaedics", "Plastic Surgery")
+wl_type = c("weeks_52", "weeks_65")
+}
+
 
 # ------------------------------------------------------------------------------
 #####
-# Produce forecast outputs, csv + plot, for each speciality
+# Train, create combination forecast, bias to latest month, output
+{
 list_paths <- list()
 list_wl <- list()
+}
+
 for(i in wl_type) {
   wl_prepared <- wl_comp %>%
     filter(., wl == i)
@@ -129,27 +135,26 @@ for(i in wl_type) {
       plot(weights)
       # have it print the first four numbers as a quick sanity check?
       
-      # Filter to only combi models. "combination" is only AI forecast
+      # Filter to only combi model; "combination" is AI forecast only
       combi_path <- sim_paths %>%
-        filter(.model == c("combination")) %>%
-        mutate(.sim = if_else(.sim < 1, 0, .sim))
+        filter(.model == c("combination"))
       
       # Combine AI predictions with weights_vector to produce "paramatised"
       all_path <- sim_paths %>%
         filter(.model == c("paramatised")) %>%
         transform(., horizon=match(date, unique(date))) %>%
-        mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
         group_by(horizon) %>%
         left_join(., y = weights, by = "horizon") %>%
         mutate(.sim = (.sim + weights_vector)) %>%
         ungroup(.) %>%
         select(-(c(weights_vector, horizon))) %>%
         bind_rows(combi_path) %>%
+        mutate(.sim = if_else(.sim < 1, 0, .sim)) %>%
         mutate(wl = i,
                spec_desc = j) %>%
         as_tibble(.)
       
-      
+
       if(dim(all_path)[1] != 0) {
       
         
@@ -196,5 +201,13 @@ print(plot_o)
 
 # ------------------------------------------------------------------------------
 # Long waiters clearance times
+{
 source(here("scripts", "current", "sourced_scripts", 
             "sourced-clearance_table.R"))
+# Print long waiter tables
+print(lw_table)
+
+# Print long waiters plot
+print(plot_lw)
+}
+
