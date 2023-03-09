@@ -24,7 +24,7 @@ o_wl <- data_mutate %>%
 lw_wl <- data_mutate %>%
   filter(., (wm52 == 1 | wm65 == 1) &
          covid_recovery_priority == "Inpatient_wl") %>%
-  mutate(., "temp" = if_else(wm52 == 1 & wm65 == 1, ">65", ">52")) %>%
+  mutate(., "temp" = if_else(wm52 == 1 & wm65 == 1, "weeks_65", "weeks_52")) %>%
   group_by(date, spec_desc, temp) %>%
   summarise(patients = n(), .groups = "drop_last") %>%
   ungroup(.) %>%
