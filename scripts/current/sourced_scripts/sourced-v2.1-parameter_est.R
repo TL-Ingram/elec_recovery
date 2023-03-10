@@ -2,7 +2,7 @@ source(here("scripts/archive/db_connect_functions.R"))
 source(here("scripts/archive/helper_functions.R"))
 
 specialities <- speciality
-# speciality = "Haematology"
+speciality = c("Trauma & Orthopaedics")
 wl_type = c("Inpatient_wl", "Planned")
 
 ###### PARAMS #####
@@ -224,10 +224,13 @@ GROUP BY internal_number)
 SELECT DISTINCT
   i.internal_number
 , i.PathwayNumber as pathway_number
-, DATEDIFF(DAY, rtt.clock_start_date, i.[removed_date_dt]) as days_to_removal
+, rtt.clock_start_date
 , removed_date_dt as removed_date
+, i.decision_to_admit_date_dt as dta_date
 , CASE WHEN ([admission_date_dt] IS NULL AND [tci_date_dt] = [removed_date_dt]) THEN [tci_date_dt] ELSE [admission_date_dt] END as admission_date
 , CASE when i.Admis_Method_Desc = 'ELECTIVE PLANNED' THEN 'Planned' ELSE priorities.covid_recovery_priority END as covid_recovery_priority
+, DATEDIFF(DAY, rtt.clock_start_date, i.[admission_date_dt]) as days_to_adms
+, DATEDIFF(DAY, rtt.clock_start_date, removed_date_dt) as days_to_removal
 FROM [nhs_reporting].[dbo].[reporting_Inpatient_Waiting_List] i
 LEFT JOIN priorities on priorities.internal_number  = i.internal_number
 LEFT JOIN (SELECT pathway_number, clock_start_date, clock_stop_date FROM [nhs_reporting].[dbo].[reporting_rtt_pathway_summary] WHERE run_type = 'today' AND pathway_status <> 'not applicable') rtt ON i.PathwayNumber = rtt.pathway_number
@@ -265,12 +268,15 @@ AND removed_date_dt BETWEEN CAST('",
       ) %>%
       mutate(flag = ifelse(admission_date == removed_date, 1, 0)) %>%
       dplyr::filter(flag == 1) %>%
-      mutate(covid_recovery_priority = ifelse(grepl('Pri*', covid_recovery_priority), "Inpatient_wl", as.character(covid_recovery_priority)))
+      mutate(covid_recovery_priority = ifelse(grepl('Pri*', covid_recovery_priority), "Inpatient_wl", as.character(covid_recovery_priority))) %>%
+      mutate(clock_start_date = if_else(covid_recovery_priority %in% c("Inpatient_wl") & is.na(clock_start_date), dta_date, clock_start_date)) %>%
+      mutate(days_to_adms = ifelse(covid_recovery_priority == "Planned", NA, date(admission_date) - date(clock_start_date)))
     
     
     rott <-
       removals %>%
-      mutate(flag = ifelse(is.na(admission_date),1, ifelse(admission_date!=removed_date,1,0) )) %>%
+      mutate(flag = if_else(is.na(admission_date), 1, 0)) %>% 
+                            # if_else(admission_date != removed_date, 1, 0))) %>%
       dplyr::filter(flag == 1) %>%
       mutate(removed_date = as.Date(removed_date, format = "%Y-%m-%d")) %>%
       mutate(
@@ -281,7 +287,11 @@ AND removed_date_dt BETWEEN CAST('",
         )
       )%>%
       mutate(covid_recovery_priority = ifelse(covid_recovery_priority == "Priority 1", "Priority 2", covid_recovery_priority)) %>%
-      mutate(covid_recovery_priority = ifelse(grepl('Pri*', covid_recovery_priority), "Inpatient_wl", as.character(covid_recovery_priority)))
+      mutate(covid_recovery_priority = ifelse(grepl('Pri*', covid_recovery_priority), "Inpatient_wl", as.character(covid_recovery_priority))) %>%
+      mutate(clock_start_date = if_else(covid_recovery_priority %in% c("Inpatient_wl") & is.na(clock_start_date), dta_date, clock_start_date)) %>%
+      mutate(days_to_removal = ifelse(covid_recovery_priority == "Planned", NA, date(removed_date) - date(clock_start_date)))
+      
+      
     
     #Admissions
     adms_daily <- adms  %>%
@@ -324,16 +334,16 @@ AND removed_date_dt BETWEEN CAST('",
     )
     
     adms_lw <- adms %>%
-      mutate(weeks_to_removal = round(days_to_removal / 7)) %>%
-      mutate(weeks_52 = if_else(weeks_to_removal >= 52, 1, 0),
-             weeks_65 = if_else(weeks_to_removal >= 65, 1, 0))
+      mutate(weeks_to_adms = round(days_to_adms / 7)) %>%
+      mutate(weeks_52 = if_else(weeks_to_adms >= 52, 1, 0),
+             weeks_65 = if_else(weeks_to_adms >= 65, 1, 0))
     
     adms_lw_daily <- adms_lw  %>%
-      filter(covid_recovery_priority != "ELECTIVE PLANNED") %>%
-      group_by(removed_date, weeks_52, weeks_65) %>%
+      filter(covid_recovery_priority != "Planned") %>%
+      group_by(admission_date, weeks_52, weeks_65) %>%
       summarise(dtas = n()) %>%
       ungroup() %>%
-      rename(dt = removed_date) %>%
+      rename(dt = admission_date) %>%
       right_join(days) %>%
       select(!(dtas)) %>%
       drop_na(weeks_52) %>%
@@ -410,7 +420,7 @@ AND removed_date_dt BETWEEN CAST('",
                  weeks_65 = if_else(weeks_to_removal >= 65, 1, 0))
         
         rott_lw_daily <- rott_lw  %>%
-          filter(covid_recovery_priority != "ELECTIVE PLANNED") %>%
+          filter(covid_recovery_priority != "Planned") %>%
           group_by(removed_date, weeks_52, weeks_65) %>%
           summarise(dtas = n()) %>%
           ungroup() %>%
