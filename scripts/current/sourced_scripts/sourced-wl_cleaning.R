@@ -40,7 +40,7 @@ wl_type <- wl_comp %>%
   pull(wl)
 
 # clean up global env
-rm(data, data_mutate, o_wl, lw_wl)
+rm(data, o_wl, lw_wl)
 
 
 # ------------------------------------------------------------------------------

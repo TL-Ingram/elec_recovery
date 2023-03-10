@@ -108,7 +108,7 @@ for(i in wl_type) {
       
       # Generate future sample paths
       sim_paths <- model_frame %>%
-        generate(h = h, times = 10)
+        generate(h = h, times = 100)
       
       # Calculate specialities overall parameter position
       param_filter <- parameters %>%
