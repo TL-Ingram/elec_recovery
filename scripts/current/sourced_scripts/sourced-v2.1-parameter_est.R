@@ -2,7 +2,7 @@ source(here("scripts/archive/db_connect_functions.R"))
 source(here("scripts/archive/helper_functions.R"))
 
 specialities <- speciality
-speciality = c("Trauma & Orthopaedics")
+speciality = c("Vascular Surgery", "Trauma & Orthopaedics", "Plastic Surgery")
 wl_type = c("Inpatient_wl", "Planned")
 
 ###### PARAMS #####
@@ -219,7 +219,7 @@ SELECT DISTINCT
 internal_number,
 MIN(i.priority_local_code) AS covid_recovery_priority
 FROM [nhs_reporting].[dbo].[reporting_Inpatient_Waiting_List] i
-where snapshot_date_dt > CAST('2023-01-01' AS DATE)
+where snapshot_date_dt > CAST('2023-03-01' AS DATE)
 GROUP BY internal_number)
 SELECT DISTINCT
   i.internal_number

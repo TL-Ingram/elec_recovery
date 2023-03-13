@@ -4,7 +4,7 @@ source(here("scripts/archive/helper_functions.R"))
 specialities <- speciality
 
 ###### PARAMS #####
-  date_from = c(Sys.Date() - 60 - 3)
+  date_from = date("2023-03-01")
   date_to = c(Sys.Date() - 3)
   labels = c("Current")
 

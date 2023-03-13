@@ -42,7 +42,7 @@ train_period_label = "Training period"
 param_start = date(train_halt - 30)
 h = 365
 speciality = c("Vascular Surgery", "Trauma & Orthopaedics", "Plastic Surgery")
-wl_type = c("weeks_52", "weeks_65")
+wl_type = c("Inpatient_wl", "Planned")
 }
 
 
