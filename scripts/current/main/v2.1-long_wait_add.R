@@ -1,7 +1,7 @@
 #####
 # Load packages
 suppressWarnings(shelf(tidyverse, here, lubridate, forecast, 
-                       fpp3, hrbrthemes, odbc, glue))
+                       fpp3, hrbrthemes, odbc, glue, padr))
 
 
 # ------------------------------------------------------------------------------
@@ -16,8 +16,10 @@ if (day(Sys.Date()) <= 3) {
 #####
 # Load historic waiting list and clean
 {
-  data <- read_csv(here("data", "hist_wl.csv"), show_col_types = F)
-  source(here("scripts", "current", "sourced_scripts", "sourced-wl_cleaning.R"))
+  data <- suppressWarnings(read_csv(here("data", "raw.csv"), 
+                                    show_col_types = F))
+  source(here("scripts", "current", "sourced_scripts", 
+              "sourced-v2.0-wl_cleaning.R"))
   glue("Historic inpatient waiting lists loaded")
 }
 

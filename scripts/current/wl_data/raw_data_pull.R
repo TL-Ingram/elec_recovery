@@ -2,42 +2,7 @@
 
 raw <- read_csv(here("data", "raw.csv"))
 data <- read_csv(here("data", "hist_wl-2.csv"), show_col_types = F)
-
-
-raw_mod <- raw %>%
-  mutate(., decision_to_admit_date_dt = 
-           parse_date_time(c(decision_to_admit_date_dt), 
-                           orders = c('dmy_HMS', "dmy"))) %>%
-  mutate(., across(.cols = c(removed_date_dt, tci_date_dt, snapshot_date_dt,
-                          RTT_Start_Date), .fns = dmy_hms),
-         across(.cols = c(admission_date_dt), .fns = dmy)) %>%
-  filter(., date(snapshot_date_dt) > (Sys.Date() - 365),
-         Admis_Method_Desc %in% c("ELECTIVE PLANNED", "ELECTIVE WAITING LIST", 
-                                  "ELECTIVE BOOKED")) %>%
-  mutate(., admission_date_dt = if_else(is.na(admission_date_dt) & 
-                                       (tci_date_dt == removed_date_dt), 
-                                     ymd(tci_date_dt), ymd(admission_date_dt)),
-         ., rtt_days_wait = ifelse(Admis_Method_Desc == "ELECTIVE PLANNED", NA, 
-                                date(snapshot_date_dt) - 
-                                  date(RTT_Start_Date))) %>%
-  mutate(., wm52 = if_else(Admis_Method_Desc == "ELECTIVE PLANNED", 0,
-                           if_else(Admis_Method_Desc != "ELECTIVE PLANNED" & 
-                                     rtt_days_wait >= 365, 1, 0)),
-         ., wm65 = if_else(Admis_Method_Desc == "ELECTIVE PLANNED", 0,
-                           if_else(Admis_Method_Desc != "ELECTIVE PLANNED" & 
-                                     rtt_days_wait >= 455, 1, 0))) %>%
-  select(., snapshot_date_dt, decision_to_admit_date_dt, admission_date_dt, 
-         removed_date_dt, spec_desc, priority_local_code,
-         internal_number, PathwayNumber, Admis_Method_Desc, 
-         RTT_Start_Date, rtt_days_wait, contains("wm"))
-
-# add ROTT
-# convert priorities appropriately
-# then connect with wl_cleaning
   
-  
-
-
 ps_raw <- raw %>%
   filter(spec_desc == "Plastic Surgery") %>%
   filter(dmy_hms(decision_to_admit_date_dt) > date(date_from),
