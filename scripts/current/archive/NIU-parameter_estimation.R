@@ -4,10 +4,10 @@ source(here("scripts/archive/helper_functions.R"))
 specialities <- speciality
 
 ###### PARAMS #####
-  date_from = date("2023-03-01")
+  date_from = c(Sys.Date() - 33)
   date_to = c(Sys.Date() - 3)
   labels = c("Current")
-
+speciality = "Trauma & Orthopaedics"
 
 for (specialty in speciality){
   
@@ -67,12 +67,12 @@ LEFT JOIN priorities on priorities.internal_number  = i.internal_number
 WHERE i.Admis_Method_Desc IN ('ELECTIVE PLANNED', 'ELECTIVE WAITING LIST', 'ELECTIVE BOOKED')
 AND waiting_list_type = 'SNAP'
 AND spec_desc = '",
-      specialty,
+      speciality,
       "'
 AND decision_to_admit_date_dt BETWEEN CAST('",
-      date_from[d],
+      date_from[1],
       "' AS DATE) AND CAST('",
-      date_to[d],
+      date_to[1],
       "' AS DATE);"
     )
 
@@ -139,6 +139,7 @@ AND decision_to_admit_date_dt BETWEEN CAST('",
     (daily_av = mean(dta_daily$dtas))
     sqrt(var(dta_daily$dtas))
     
+}
     parameters <- rbind(
       parameters,
       data.frame(
@@ -339,12 +340,12 @@ LEFT JOIN priorities on priorities.internal_number  = i.internal_number
 WHERE i.Admis_Method_Desc IN ('ELECTIVE PLANNED', 'ELECTIVE WAITING LIST', 'ELECTIVE BOOKED')
 AND waiting_list_type = 'SNAP'
 AND spec_desc = '",
-      specialty,
+      speciality,
       "'
 AND removed_date_dt BETWEEN CAST('",
-      date_from[d],
+      date_from[1],
       "' AS DATE) AND CAST('",
-      date_to[d],
+      date_to[1],
       "' AS DATE);"
     )
     
@@ -390,8 +391,8 @@ AND removed_date_dt BETWEEN CAST('",
     ### daily average
     days <-
       data.frame(dt = seq(
-        from = date_from[d],
-        to = date_to[d],
+        from = date_from[1],
+        to = date_to[1],
         by = 1
       ))
     
@@ -406,9 +407,12 @@ AND removed_date_dt BETWEEN CAST('",
       mutate(adms = ifelse(is.na(adms), 0, adms))
     
     ggplot(data = adms_daily, aes(x = dt, y = adms)) +
-      geom_line()
+      geom_smooth()
     
     (daily_av = mean(adms_daily$adms))
+    capacity_av <- adms_daily %>%
+      summarise(month_mean = sum(adms)/30)
+
     
     parameters <- rbind(
       parameters,

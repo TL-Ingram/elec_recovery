@@ -36,9 +36,9 @@ data_mod <- data %>%
          rott = ifelse(is.na(admission_date_dt) & !is.na(removed_date_dt), 
                        1, 0)) %>%
   filter(!(grepl(("5|6|7|8|9"), priority_local_code))) %>%
-  mutate(priority_local_code = if_else(grepl("[[:digit:]]", 
-                                             priority_local_code), 
-                                       "Inpatient_wl", priority_local_code)) %>%
+  # mutate(priority_local_code = if_else(grepl("[[:digit:]]", 
+  #                                            priority_local_code), 
+  #                                      "Inpatient_wl", priority_local_code)) %>%
   rename("wl" = priority_local_code,
          "date" = snapshot_date_dt,
          "speciality" = spec_desc)
