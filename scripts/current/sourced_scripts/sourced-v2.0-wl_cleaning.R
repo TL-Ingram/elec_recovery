@@ -1,6 +1,6 @@
 #####
-# Engineer raw data to include all relevant info for forecasting
-data_mod <- data %>%
+# Engineer raw data to include all relevant info for parameters
+data_param <- data %>%
   mutate(., decision_to_admit_date_dt = 
            parse_date_time(c(decision_to_admit_date_dt), 
                            orders = c('dmy_HMS', "dmy"))) %>%
@@ -32,24 +32,27 @@ data_mod <- data %>%
                                          glue("Priority 
                                                {priority_local_code}")),
          priority_local_code = ifelse(grepl("NA", priority_local_code), 
-                                      "Removed", priority_local_code),
+                                      "Inpatient_wl", priority_local_code),
          rott = ifelse(is.na(admission_date_dt) & !is.na(removed_date_dt), 
                        1, 0)) %>%
-  filter(!(grepl(("5|6|7|8|9"), priority_local_code))) %>%
-  # mutate(priority_local_code = if_else(grepl("[[:digit:]]", 
-  #                                            priority_local_code), 
-  #                                      "Inpatient_wl", priority_local_code)) %>%
   rename("wl" = priority_local_code,
          "date" = snapshot_date_dt,
          "speciality" = spec_desc)
 
+# Further engineering for forecasting
+data_forecast <- data_param %>% 
+  # filter(!(grepl(("5|6|7|8|9"), priority_local_code))) %>%
+  mutate(priority_local_code = if_else(grepl("[[:digit:]]", 
+                                             priority_local_code), 
+                                       "Inpatient_wl", priority_local_code))
+
 # Pull speciality names into vector for looping through
-speciality <- data_mod %>%
+speciality <- data_forecast %>%
   distinct(speciality) %>%
   pull(speciality)
 
 # Overall WL (Inpatient, planned, removed)
-o_wl <- data_mod %>%
+o_wl <- data_forecast %>%
   group_split(wl) %>%
   map(. %>%
         group_by(date, speciality, wl) %>%
@@ -57,7 +60,7 @@ o_wl <- data_mod %>%
         ungroup(.))
 
 # 52 & 65 week waiter WL. Only Inpatient_wl
-lw_wl <- data_mod %>%
+lw_wl <- data_forecast %>%
   filter(., (wm52 == 1 | wm65 == 1) &
            wl == "Inpatient_wl") %>%
   mutate(., weeks = if_else(wm52 == 1 & wm65 == 1, "weeks_65", "weeks_52")) %>%
