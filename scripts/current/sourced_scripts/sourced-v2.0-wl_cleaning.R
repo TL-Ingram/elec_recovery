@@ -39,20 +39,15 @@ data_param <- data %>%
          "date" = snapshot_date_dt,
          "speciality" = spec_desc)
 
-# Further engineering for forecasting
-data_forecast <- data_param %>% 
-  # filter(!(grepl(("5|6|7|8|9"), priority_local_code))) %>%
-  mutate(priority_local_code = if_else(grepl("[[:digit:]]", 
-                                             priority_local_code), 
-                                       "Inpatient_wl", priority_local_code))
 
 # Pull speciality names into vector for looping through
-speciality <- data_forecast %>%
+speciality <- data_param %>%
   distinct(speciality) %>%
   pull(speciality)
 
 # Overall WL (Inpatient, planned, removed)
-o_wl <- data_forecast %>%
+o_wl <- data_param %>%
+  mutate(wl = if_else(grepl("[[:digit:]]", wl), "Inpatient_wl", wl)) %>%
   group_split(wl) %>%
   map(. %>%
         group_by(date, speciality, wl) %>%
@@ -60,9 +55,9 @@ o_wl <- data_forecast %>%
         ungroup(.))
 
 # 52 & 65 week waiter WL. Only Inpatient_wl
-lw_wl <- data_forecast %>%
+lw_wl <- data_param %>%
   filter(., (wm52 == 1 | wm65 == 1) &
-           wl == "Inpatient_wl") %>%
+           grepl("[[:digit:]]", wl)) %>%
   mutate(., weeks = if_else(wm52 == 1 & wm65 == 1, "weeks_65", "weeks_52")) %>%
   group_by(date, speciality, weeks) %>%
   summarise(patients = n(), .groups = "drop_last") %>%

@@ -23,6 +23,23 @@ if (day(Sys.Date()) <= 3) {
   glue("Historic inpatient waiting lists loaded")
 }
 
+
+# ------------------------------------------------------------------------------
+#####
+# Time period models trained on
+{
+  train_halt = date(max(wl_comp$date))
+  train_init = date(train_halt - 180)
+  train_period_label = "Training period"
+  param_start = date(train_halt - 30)
+  h = 365
+  speciality = c("Vascular Surgery", "Trauma & Orthopaedics", "Plastic Surgery")
+  wl_type = c("Inpatient_wl", "Planned")
+}
+
+
+# ------------------------------------------------------------------------------
+#####
 # Load parameters and clean
 {
   if (day(Sys.Date()) == 1) {
@@ -32,19 +49,6 @@ if (day(Sys.Date()) <= 3) {
   parameters <- read_rds(here("rds", "parameters", "all_spec.rds"))
   glue("Speciality specific parameters loaded")
 }
-}
-
-
-# ------------------------------------------------------------------------------
-# Time period models trained on
-{
-train_halt = date(max(wl_comp$date))
-train_init = date(train_halt - 180)
-train_period_label = "Training period"
-param_start = date(train_halt - 30)
-h = 365
-speciality = c("Vascular Surgery", "Trauma & Orthopaedics", "Plastic Surgery")
-wl_type = c("Inpatient_wl", "Planned")
 }
 
 
@@ -113,7 +117,7 @@ for(i in wl_type) {
         generate(h = h, times = 100)
       
       # Calculate specialities overall parameter position
-      param_filter <- parameters %>%
+      param_filter <- wl_param %>%
         filter(., list == i,
                speciality == j) %>%
         pivot_wider(-c(speciality, time_period, list), 
