@@ -28,10 +28,10 @@ if (day(Sys.Date()) <= 3) {
 #####
 # Time period models trained on
 {
-  train_halt = (date(max(wl_comp$date)) - 10)
+  train_halt = (date(max(wl_comp$date))-10)
   train_init = date(train_halt - 180)
   train_period_label = "Training period"
-  param_start = date(train_halt - 45)
+  param_start = date(train_halt - 30)
   h = 365
   # speciality = c("Trauma & Orthopaedics")
   # wl_type = c("Inpatient_wl")
@@ -222,3 +222,7 @@ print(lw_table)
 print(plot_lw)
 }
 
+
+# ------------------------------------------------------------------------------
+#####
+# Rmarkdown document

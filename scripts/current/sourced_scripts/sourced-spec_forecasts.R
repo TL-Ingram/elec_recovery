@@ -47,7 +47,8 @@ spec_forecast <- sim_results %>%
                               Blue line depicts mean predicted list size
                               Shaded region depicts 80% prediction interval"))
 
+spec_forecast
 # Save plot
-file_name <- glue("{i}_{j}_1")
+file_name <- glue("{i}_{j}_2103")
 ggsave(here("plots", "current", "speciality_forecasts", j, 
             filename=paste0(file_name, ".png")), device = "png")
