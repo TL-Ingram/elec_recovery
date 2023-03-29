@@ -126,4 +126,3 @@ ggsave(here("plots", "current", "overall_therapeutic", "longwaiter_wl.jpg"),
 
 # Print plot
 print(plot_lw)
-
