@@ -56,7 +56,7 @@ plot_o <- knitted %>%
            alpha = .1, fill = "grey75") +
   geom_text(data = wl_prep, aes(x = train_init + 90, y = Inf,
                                 label = train_period_label),
-            vjust = 1.5, size = 4.5, colour = "grey40") +
+            vjust = 1.5, size = 3, colour = "grey40") +
   scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
   plot_defaults_two +
   scale_colour_manual(values = c("royalblue3", "mediumpurple3")) +

@@ -16,10 +16,13 @@ if (day(Sys.Date()) <= 3) {
 #####
 # Load historic waiting list and clean
 {
-  data <- suppressWarnings(read_csv(here("data", "raw.csv"), 
-                                    show_col_types = F))
-  source(here("scripts", "current", "sourced_scripts", 
-              "sourced-v2.0-wl_cleaning.R"))
+  # data <- suppressWarnings(read_csv(here("data", "raw.csv"), 
+  #                                   show_col_types = F))
+  # source(here("scripts", "current", "sourced_scripts", 
+  #             "sourced-v2.0-wl_cleaning.R"))
+  wl_comp <- read_rds(here("data", "temp.rds"))
+  source(here("scripts", "current", "sourced_scripts",
+              "sourced-plot_defaults.R"))
   glue("Historic inpatient waiting lists loaded")
 }
 
@@ -32,9 +35,9 @@ if (day(Sys.Date()) <= 3) {
   train_init = date(train_halt - 180)
   train_period_label = "Training period"
   param_start = date(train_halt - 30)
-  h = 365
-  # speciality = c("Trauma & Orthopaedics")
-  # wl_type = c("Inpatient_wl")
+  h = 180
+  speciality = c("Trauma & Orthopaedics", "Colorectal Surgery")
+  wl_type = c("Inpatient_wl")
 }
 
 
@@ -119,7 +122,7 @@ for(i in wl_type) {
         generate(h = h, times = 25)
       
       # Calculate specialities overall parameter position
-      param_filter <- wl_param %>%
+      param_filter <- parameters %>%
         filter(., list == i,
                speciality == j) %>%
         pivot_wider(-c(speciality, time_period, list), 
@@ -213,16 +216,11 @@ print(plot_o)
 # ------------------------------------------------------------------------------
 # Long waiters clearance times
 {
-source(here("scripts", "current", "sourced_scripts", 
-            "sourced-clearance_table.R"))
-# Print long waiter tables
-print(lw_table)
-
-# Print long waiters plot
-print(plot_lw)
+# source(here("scripts", "current", "sourced_scripts", 
+#             "sourced-clearance_table.R"))
+# # Print long waiter tables
+# print(lw_table)
+# 
+# # Print long waiters plot
+# print(plot_lw)
 }
-
-
-# ------------------------------------------------------------------------------
-#####
-# Rmarkdown document
