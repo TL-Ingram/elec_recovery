@@ -43,9 +43,9 @@ list_param <- list()
       demand_mean <- demand_daily %>%
         group_by(wl = grepl("[[:digit:]]", wl), .add = T) %>%
         summarise(month_mean = sum(demand)/30) %>%
-        mutate(wl = if_else(wl == T, "Inpatient_wl", "Planned"))
+        mutate(wl = if_else(wl == T, "Active list", "Planned"))
       
-      for (wl in c("Planned", "Inpatient_wl")) {
+      for (wl in c("Planned", "Active list")) {
         if (!wl %in% demand_mean$wl) {
           demand_mean <- rbind(
             demand_mean,
@@ -96,7 +96,7 @@ list_param <- list()
         drop_na() %>%
         group_by(wl) %>%
         summarise(month_mean = sum(capacity)/30)
-      for (wl in c("Planned", "Inpatient_wl")) {
+      for (wl in c("Planned", "Active list")) {
         if (!wl %in% capacity_mean$wl) {
           capacity_mean <- rbind(
             capacity_mean,
@@ -146,7 +146,7 @@ list_param <- list()
       rott_mean <- rott_daily %>%
         group_by(wl) %>%
         summarise(month_mean = sum(rott)/30)
-      for (wl in c("Planned", "Inpatient_wl")) {
+      for (wl in c("Planned", "Active list")) {
         if (!wl %in% rott_mean$wl) {
           rott_mean <- rbind(
             rott_mean,

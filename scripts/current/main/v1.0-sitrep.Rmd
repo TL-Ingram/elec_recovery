@@ -1,6 +1,6 @@
 ---
 date: "`r Sys.Date()`"
-title: "Situation Report - Elective Care recovery"
+title: "Situation Report - Elective Care forecast recovery"
 author: "Thomas Ingram"
 output: pdf_document
 ---
@@ -9,7 +9,103 @@ output: pdf_document
 library(here)
 source(here("scripts", "current", "main", "v2.2-rmarkdown.R"), local = knitr::knit_global())
 ```
-``` {r plot, echo = F, warning = F, message = F}
-print(plot_o)
+
+
+
+# Methodology
+
+AI Training period is from `r train_init` to `r train_halt`.
+Parameter weighting estimated from `r param_start` to `r train_halt`
+Horizon lines depict mean predicted list size
+Shaded region depicts 80% prediction interval
+                              
+talk about methods used to generate the forecasts
+
+<br>
+
+# Per speciality: long waiters forecast recovery
+
+# Inpatient elective list forecast
+
+At `r train_halt` our overall inpatient active and planned waiting lists are as shown below. Forecasts extend for `r h` days.
+
+``` {r plot_o, echo = F, warning = F, message = F}
+plot_o
+```
+
+<br>
+
+# Our overall long waiters positions are shown below.
+
+``` {r plot_lw, echo = F, warning = F, message = F}
+plot_lw
+```
+
+<br>
+
+# Over 52 week waiters
+
+``` {r lw_table_52, include = T, echo = F, warning = F, message = F}
+library(gt)
+# files <- list.files(path = here("csv", "clear_date", "current"), full.names = TRUE)
+  lw_52 <- readr::read_csv(here("csv", "clear_date", "current", "52wk_clear_dates.csv")) %>%
+  gt(
+    groupname_col = "Subheading",
+    rowname_col = "Variable"
+  ) %>%
+    tab_header(title = md("")) %>%
+  opt_table_lines(extent = "none") %>%
+  tab_style(
+    style = list(
+      cell_text(weight = "bold")
+    ),
+    locations = cells_row_groups()
+  ) %>%
+  cols_align(align = "center"
+  ) %>%
+  opt_table_lines(extent = "default") %>%
+  tab_options(
+    column_labels.border.top.color = "white",
+    column_labels.border.top.width = px(3),
+    column_labels.border.bottom.color = "black",
+    table_body.hlines.color = "white",
+    table.border.bottom.color = "white",
+    table.border.bottom.width = px(3)
+  )
+lw_52
+
+```
+
+<br>
+
+# Over 65 week waiters
+``` {r lw_table_65, include = T, echo = F, warning = F, message = F}
+library(gt)
+  lw_65 <- readr::read_csv(here("csv", "clear_date", "current", "65wk_clear_dates.csv")) %>%
+  gt(
+    groupname_col = "Subheading",
+    rowname_col = "Variable"
+  ) %>%
+    tab_header(title = md("")) %>%
+  opt_table_lines(extent = "none") %>%
+  tab_style(
+    style = list(
+      cell_text(weight = "bold")
+    ),
+    locations = cells_row_groups()
+  ) %>%
+  cols_align(align = "center"
+  ) %>%
+  opt_table_lines(extent = "default") %>%
+  tab_options(
+    column_labels.border.top.color = "white",
+    column_labels.border.top.width = px(3),
+    column_labels.border.bottom.color = "black",
+    table_body.hlines.color = "white",
+    table.border.bottom.color = "white",
+    table.border.bottom.width = px(3)
+  )
+lw_65
+
 ```
 

@@ -32,7 +32,7 @@ data_param <- data %>%
                                          glue("Priority 
                                                {priority_local_code}")),
          priority_local_code = ifelse(grepl("NA", priority_local_code), 
-                                      "Inpatient_wl", priority_local_code),
+                                      "Active list", priority_local_code),
          rott = ifelse(is.na(admission_date_dt) & !is.na(removed_date_dt), 
                        1, 0)) %>%
   rename("wl" = priority_local_code,
@@ -47,14 +47,14 @@ speciality <- data_param %>%
 
 # Overall WL (Inpatient, planned, removed)
 o_wl <- data_param %>%
-  mutate(wl = if_else(grepl("[[:digit:]]", wl), "Inpatient_wl", wl)) %>%
+  mutate(wl = if_else(grepl("[[:digit:]]", wl), "Active list", wl)) %>%
   group_split(wl) %>%
-  map(. %>%
+  purrr::map(. %>%
         group_by(date, speciality, wl) %>%
         summarise(patients = n(), .groups = "drop_last") %>%
         ungroup(.))
 
-# 52 & 65 week waiter WL. Only Inpatient_wl
+# 52 & 65 week waiter WL. Only Active list
 lw_wl <- data_param %>%
   filter(., (wm52 == 1 | wm65 == 1) &
            grepl("[[:digit:]]", wl)) %>%

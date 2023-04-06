@@ -29,7 +29,7 @@ spec_forecast <- sim_results %>%
   geom_text(data = wl_prep, aes(x = (train_init + 90), 
                                 y = Inf), 
             label = train_period_label,
-            vjust = 1.5, size = 2.5, colour = "grey40") +
+            vjust = 1.5, size = 3, colour = "grey40") +
   scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
   scale_colour_discrete(guide = "none") +
   plot_defaults +
@@ -38,14 +38,8 @@ spec_forecast <- sim_results %>%
        y = "Patients",
        title = glue("{j} - {i} list"),
        level = "",
-       subtitle = glue("Forecast horizon begins from {train_halt} 
-                               and extends for {h} days"),
-       caption = glue("AI Training period is from {train_init}
-                              to {train_halt}
-                              Parameter weighting estimated from {param_start}
-                              to {train_halt}
-                              Blue line depicts mean predicted list size
-                              Shaded region depicts 80% prediction interval"))
+       subtitle = glue("Forecast begins from {train_halt} and extends for {h} days"),
+       caption = glue("AI Training period is from {train_init} to {train_halt}"))
 
 spec_forecast
 # Save plot

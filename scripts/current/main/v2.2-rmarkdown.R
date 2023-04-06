@@ -1,7 +1,7 @@
 #####
 # Load packages
 suppressWarnings(shelf(tidyverse, here, lubridate, forecast, 
-                       fpp3, hrbrthemes, odbc, glue, padr))
+                       fpp3, hrbrthemes, odbc, glue, padr, readr))
 
 
 # ------------------------------------------------------------------------------
@@ -16,11 +16,12 @@ if (day(Sys.Date()) <= 3) {
 #####
 # Load historic waiting list and clean
 {
-  # data <- suppressWarnings(read_csv(here("data", "raw.csv"), 
+  # data <- suppressWarnings(read_csv(here("data", "raw.csv"),
   #                                   show_col_types = F))
-  # source(here("scripts", "current", "sourced_scripts", 
+  # source(here("scripts", "current", "sourced_scripts",
   #             "sourced-v2.0-wl_cleaning.R"))
-  wl_comp <- read_rds(here("data", "temp.rds"))
+  # wl_comp <- write_rds(wl_comp, here("data", "temp.rds"))
+  wl_comp <- readr::read_rds(here("data", "temp.rds"))
   source(here("scripts", "current", "sourced_scripts",
               "sourced-plot_defaults.R"))
   glue("Historic inpatient waiting lists loaded")
@@ -36,8 +37,15 @@ if (day(Sys.Date()) <= 3) {
   train_period_label = "Training period"
   param_start = date(train_halt - 30)
   h = 180
-  speciality = c("Trauma & Orthopaedics", "Colorectal Surgery")
-  wl_type = c("Inpatient_wl")
+  speciality = c("Trauma & Orthopaedics", "Cardiology")
+  wl_type = c("Active list", "weeks_65", "weeks_52")
+  # speciality <- wl_comp %>%
+  #   distinct(speciality) %>%
+  #   pull(speciality)
+  # wl_type <- wl_comp %>%
+  #   distinct(wl) %>%
+  #   filter(., wl != c("Removed")) %>%
+  #   pull(wl)
 }
 
 
@@ -186,7 +194,6 @@ for(i in wl_type) {
   }
 }
 
-
 # ------------------------------------------------------------------------------
 #####
 # Write rds for speedy testing
@@ -196,10 +203,10 @@ write_rds(path_keys, here("rds", "keys", "path_keys.rds"))
 }
 
 # # Read rds for speedy testing
-# {
-# wl_keys <- read_rds(here("rds", "keys", "wl_keys.rds"))
-# path_keys <- read_rds(here("rds", "keys", "path_keys.rds"))
-# }
+{
+wl_keys <- read_rds(here("rds", "keys", "wl_keys.rds"))
+path_keys <- read_rds(here("rds", "keys", "path_keys.rds"))
+}
 
 
 # ------------------------------------------------------------------------------
@@ -216,11 +223,13 @@ print(plot_o)
 # ------------------------------------------------------------------------------
 # Long waiters clearance times
 {
-# source(here("scripts", "current", "sourced_scripts", 
-#             "sourced-clearance_table.R"))
+source(here("scripts", "current", "sourced_scripts",
+            "sourced-clearance_table.R"))
+lw_tables <- c("lw_52")
 # # Print long waiter tables
-# print(lw_table)
+print(lw_table)
 # 
 # # Print long waiters plot
 # print(plot_lw)
 }
+

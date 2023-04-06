@@ -27,21 +27,21 @@ knitted <- rbind(hist_wl, af_test) %>%
 # Plot inpatient and planned waiting lists
 plot_o <- knitted %>%
   ggplot() +
-  geom_line(aes(date, patients, colour = wl), alpha = 0.8, size = 0.8, 
+  geom_line(aes(date, patients, colour = wl), alpha = 0.8, size = 0.6, 
             data = knitted %>% 
               filter(wl %in% c("Planned", 
-                               "Inpatient_wl"))) +
-  geom_line(aes(date, p_mean, colour = wl), alpha = 0.8, size = 0.8, 
+                               "Active list"))) +
+  geom_line(aes(date, p_mean, colour = wl), alpha = 0.8, size = 0.6, 
             data = knitted %>% 
               filter(wl %in% c("Planned", 
-                               "Inpatient_wl"),
+                               "Active list"),
                      .model == "paramatised")) +
   geom_ribbon(aes(date, ymax = p_upper, ymin = p_lower), 
               fill="slategray3", alpha=.3,
               data = knitted %>% filter(wl %in% "Planned")) +
   geom_ribbon(aes(date, ymax = p_upper, ymin = p_lower), 
               fill="slategray3", alpha=.3,
-              data = knitted %>% filter(wl %in% "Inpatient_wl")) +
+              data = knitted %>% filter(wl %in% "Active list")) +
   geom_vline(data = wl_prep, xintercept = train_halt,
              linetype = "dashed", colour = "grey50",
              size = 0.5, alpha = 0.8) +
@@ -63,17 +63,10 @@ plot_o <- knitted %>%
   labs(fill = "",
        x = "",
        y = "Patients",
-       title = "WWL inpatient waiting list - forecasted position",
+       title = "",
        level = "",
        colour = "",
-       subtitle = glue("Forecast horizon begins from {train_halt} 
-                               and extends for {h} days"),
-       caption = glue("AI Training period is from {train_init}
-                              to {train_halt}
-                              Parameter weighting estimated from {param_start}
-                              to {train_halt}
-                              Horizon lines depict mean predicted list size
-                              Shaded region depicts 80% prediction interval"))
+       caption = glue("Forecast training period is from {train_init} to {train_halt}"))
 
 # Save plot
 ggsave(here( "plots", "current", "overall_therapeutic", "inpatient&planned_wl.jpg"), 

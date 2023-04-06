@@ -46,6 +46,10 @@ lw_table <- lw_clear %>%
                           if_else((percent_change < 0), 
                                   sprintf(fmt = "%-2g %%", .x),
                                   as.character(NA))))) %>%
+  mutate(across(c("percent_change"),
+                ~ if_else((`mean` <= 10),
+                                  "negligible",
+                                  as.character(percent_change)))) %>%
   rename(., "List" = wl,
          "Speciality" = spec_desc,
          "Date list cleared" = clear_date) %>%
@@ -72,11 +76,11 @@ rm(lw_diff, lw_clear)
 # Plot long waiters
 plot_lw <- knitted %>%
   ggplot() +
-  geom_line(aes(date, patients, colour = wl), alpha = 0.8, size = 0.8, 
+  geom_line(aes(date, patients, colour = wl), alpha = 0.8, size = 0.6, 
             data = knitted %>% 
               filter(wl %in% c("weeks_52", 
                                "weeks_65"))) + 
-  geom_line(aes(date, p_mean, colour = wl), alpha = 0.8, size = 0.8, 
+  geom_line(aes(date, p_mean, colour = wl), alpha = 0.8, size = 0.6, 
             data = knitted %>% 
               filter(wl %in% c("weeks_52", 
                                "weeks_65"),
@@ -101,24 +105,17 @@ plot_lw <- knitted %>%
            alpha = .1, fill = "grey75") +
   geom_text(data = wl_prep, aes(x = train_init + 90, y = Inf,
                                 label = train_period_label),
-            vjust = 1.5, size = 4.5, colour = "grey40") +
+            vjust = 1.5, size = 3, colour = "grey40") +
   scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
   plot_defaults_two +
   scale_colour_manual(values = c("lightsteelblue4", "indianred4")) +
   labs(fill = "",
        x = "",
        y = "Patients",
-       title = "WWL inpatient waiting list - long waiters",
+       title = "",
        level = "",
        colour = "",
-       subtitle = glue("Forecast horizon begins from {train_halt} 
-                               and extends for {h} days"),
-       caption = glue("AI Training period is from {train_init}
-                              to {train_halt}
-                              Parameter weighting estimated from {param_start}
-                              to {train_halt}
-                              Horizon lines depict mean predicted list size
-                              Shaded region depicts 80% prediction interval"))
+       caption = glue("AI Training period is from {train_init} to {train_halt}"))
 
 # Save plot
 ggsave(here("plots", "current", "overall_therapeutic", "longwaiter_wl.jpg"), 
