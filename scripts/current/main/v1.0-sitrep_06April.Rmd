@@ -121,14 +121,13 @@ lw_65
 
 <br>
 
+``` {r plot_lw_2, echo = F, warning = F, message = F}
+plot_lw_2
+```
+
 ---
 
-# Overall: Inpatient elective list forecast (specialities combined)
-
+# Overall: Inpatient elective list forecast
 ``` {r plot_o, echo = F, warning = F, message = F}
 plot_o
 ```
-``` {r plot_lw, echo = F, warning = F, message = F}
-plot_lw
-```
-

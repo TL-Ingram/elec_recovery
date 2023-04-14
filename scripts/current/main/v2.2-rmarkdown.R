@@ -37,11 +37,11 @@ if (day(Sys.Date()) <= 3) {
   train_period_label = "Training period"
   param_start = date(train_halt - 30)
   h = 365
-  speciality = c("Trauma & Orthopaedics", "Cardiology", "Oral Surgery", "Urology")
+  # speciality = c("Trauma & Orthopaedics", "Cardiology", "Oral Surgery", "Urology")
   wl_type = c(">65 weeks", ">52 weeks")
-  # speciality <- wl_comp %>%
-  #   distinct(speciality) %>%
-  #   pull(speciality)
+  speciality <- wl_comp %>%
+    distinct(speciality) %>%
+    pull(speciality)
   # wl_type <- wl_comp %>%
   #   distinct(wl) %>%
   #   filter(., wl != c("Removed")) %>%
@@ -127,7 +127,7 @@ for(i in wl_type) {
       
       # Generate future sample paths
       sim_paths <- model_frame %>%
-        generate(h = h, times = 25)
+        generate(h = h, times = 10)
       
       # Calculate specialities overall parameter position
       param_filter <- parameters %>%
@@ -225,11 +225,13 @@ print(plot_o)
 {
 source(here("scripts", "current", "sourced_scripts",
             "sourced-clearance_table.R"))
+source(here("scripts", "current", "sourced_scripts",
+            "sourced-spec_forecasts_faceted.R"))
   
 # # Print long waiter tables
 print(lw_table)
 # 
 # # Print long waiters plot
-# print(plot_lw)
+print(plot_lw_2)
 }
 

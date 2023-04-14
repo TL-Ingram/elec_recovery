@@ -33,7 +33,7 @@ plot_o <- knitted %>%
             data = knitted %>% 
               filter(wl %in% c("Planned", 
                                "Active list"),
-                     .model == "combination")) +
+                     .model == "paramatised")) +
   geom_ribbon(aes(date, ymax = p_upper, ymin = p_lower), 
               fill="slategray3", alpha=.3,
               data = knitted %>% filter(wl %in% "Planned")) +
