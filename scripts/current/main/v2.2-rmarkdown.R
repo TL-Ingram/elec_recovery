@@ -16,12 +16,12 @@ if (day(Sys.Date()) <= 3) {
 #####
 # Load historic waiting list and clean
 {
-  # data <- suppressWarnings(read_csv(here("data", "raw.csv"),
-  #                                   show_col_types = F))
-  # source(here("scripts", "current", "sourced_scripts",
-  #             "sourced-v2.0-wl_cleaning.R"))
+  data <- suppressWarnings(read_csv(here("data", "raw.csv"),
+                                    show_col_types = F))
+  source(here("scripts", "current", "sourced_scripts",
+              "sourced-v2.0-wl_cleaning.R"))
   # wl_comp <- write_rds(wl_comp, here("data", "temp.rds"))
-  wl_comp <- readr::read_rds(here("data", "temp.rds"))
+  # wl_comp <- readr::read_rds(here("data", "temp.rds"))
   source(here("scripts", "current", "sourced_scripts",
               "sourced-plot_defaults.R"))
   glue("Historic inpatient waiting lists loaded")
@@ -36,9 +36,9 @@ if (day(Sys.Date()) <= 3) {
   train_init = date(train_halt - 180)
   train_period_label = "Training period"
   param_start = date(train_halt - 30)
-  h = 180
-  speciality = c("Trauma & Orthopaedics", "Cardiology")
-  wl_type = c("Active list", "weeks_65", "weeks_52")
+  h = 365
+  speciality = c("Trauma & Orthopaedics", "Cardiology", "Oral Surgery", "Urology")
+  wl_type = c(">65 weeks", ">52 weeks")
   # speciality <- wl_comp %>%
   #   distinct(speciality) %>%
   #   pull(speciality)
@@ -99,7 +99,7 @@ for(i in wl_type) {
     
     
     # Script continuance test
-    if(dim(wl_ready)[1] >= 5) {
+    if(dim(wl_ready)[1] >= 1) {
       print(glue("Building models and running simulations..."))
       
       
@@ -177,7 +177,7 @@ for(i in wl_type) {
         as_tibble(.)
       
 
-      if(dim(all_path)[1] != 0) {
+      if(dim(all_path)[1] >= 5) {
       
         
         # Write forecast paths to list
@@ -225,7 +225,7 @@ print(plot_o)
 {
 source(here("scripts", "current", "sourced_scripts",
             "sourced-clearance_table.R"))
-lw_tables <- c("lw_52")
+  
 # # Print long waiter tables
 print(lw_table)
 # 

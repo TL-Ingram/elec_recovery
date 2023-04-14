@@ -37,9 +37,7 @@ spec_forecast <- sim_results %>%
        x = "",
        y = "Patients",
        title = glue("{j} - {i} list"),
-       level = "",
-       subtitle = glue("Forecast begins from {train_halt} and extends for {h} days"),
-       caption = glue("AI Training period is from {train_init} to {train_halt}"))
+       level = "")
 
 spec_forecast
 # Save plot

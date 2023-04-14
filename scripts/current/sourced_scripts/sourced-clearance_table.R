@@ -78,19 +78,19 @@ plot_lw <- knitted %>%
   ggplot() +
   geom_line(aes(date, patients, colour = wl), alpha = 0.8, size = 0.6, 
             data = knitted %>% 
-              filter(wl %in% c("weeks_52", 
-                               "weeks_65"))) + 
+              filter(wl %in% c(">52 weeks", 
+                               ">65 weeks"))) + 
   geom_line(aes(date, p_mean, colour = wl), alpha = 0.8, size = 0.6, 
             data = knitted %>% 
-              filter(wl %in% c("weeks_52", 
-                               "weeks_65"),
-            .model == "paramatised")) +
+              filter(wl %in% c(">52 weeks", 
+                               ">65 weeks"),
+            .model == "combination")) +
   geom_ribbon(aes(date, ymax = p_upper, ymin = p_lower), 
               fill="slategray3", alpha=.3,
-              data = knitted %>% filter(wl %in% "weeks_52")) +
+              data = knitted %>% filter(wl %in% ">52 weeks")) +
   geom_ribbon(aes(date, ymax = p_upper, ymin = p_lower), 
               fill="slategray3", alpha=.3,
-              data = knitted %>% filter(wl %in% "weeks_65")) +
+              data = knitted %>% filter(wl %in% ">65 weeks")) +
   geom_vline(data = wl_prep, xintercept = train_halt,
              linetype = "dashed", colour = "grey50",
              size = 0.5, alpha = 0.8) +
@@ -109,13 +109,13 @@ plot_lw <- knitted %>%
   scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
   plot_defaults_two +
   scale_colour_manual(values = c("lightsteelblue4", "indianred4")) +
+  ylim(c(0,1200)) +
   labs(fill = "",
        x = "",
        y = "Patients",
-       title = "",
+       title = "Long waiter lists",
        level = "",
-       colour = "",
-       caption = glue("AI Training period is from {train_init} to {train_halt}"))
+       colour = "")
 
 # Save plot
 ggsave(here("plots", "current", "overall_therapeutic", "longwaiter_wl.jpg"), 

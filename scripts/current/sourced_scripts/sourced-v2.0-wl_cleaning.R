@@ -58,7 +58,7 @@ o_wl <- data_param %>%
 lw_wl <- data_param %>%
   filter(., (wm52 == 1 | wm65 == 1) &
            grepl("[[:digit:]]", wl)) %>%
-  mutate(., weeks = if_else(wm52 == 1 & wm65 == 1, "weeks_65", "weeks_52")) %>%
+  mutate(., weeks = if_else(wm52 == 1 & wm65 == 1, ">65 weeks", ">52 weeks")) %>%
   group_by(date, speciality, weeks) %>%
   summarise(patients = n(), .groups = "drop_last") %>%
   ungroup(.) %>%

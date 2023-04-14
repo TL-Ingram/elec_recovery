@@ -20,9 +20,7 @@ af_test <- path_keys %>%
   mutate(filter = "forecast")
 
 # Row bind historical and forecast
-knitted <- rbind(hist_wl, af_test) %>%
-  mutate(wl = str_replace(wl, ">52", ">52 weeks"),
-         wl = str_replace(wl, ">65", ">65 weeks"))
+knitted <- rbind(hist_wl, af_test)
 
 # Plot inpatient and planned waiting lists
 plot_o <- knitted %>%
@@ -35,7 +33,7 @@ plot_o <- knitted %>%
             data = knitted %>% 
               filter(wl %in% c("Planned", 
                                "Active list"),
-                     .model == "paramatised")) +
+                     .model == "combination")) +
   geom_ribbon(aes(date, ymax = p_upper, ymin = p_lower), 
               fill="slategray3", alpha=.3,
               data = knitted %>% filter(wl %in% "Planned")) +
@@ -63,10 +61,9 @@ plot_o <- knitted %>%
   labs(fill = "",
        x = "",
        y = "Patients",
-       title = "",
+       title = "Active and Planned lists",
        level = "",
-       colour = "",
-       caption = glue("Forecast training period is from {train_init} to {train_halt}"))
+       colour = "")
 
 # Save plot
 ggsave(here( "plots", "current", "overall_therapeutic", "inpatient&planned_wl.jpg"), 
