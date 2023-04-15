@@ -8,21 +8,15 @@ output: pdf_document
 
 ```{r setup, include=F}
 library(here)
-source(here("scripts", "current", "main", "v2.2-rmarkdown.R"), 
+source(here("scripts", "current", "main", "v2.2-rmarkdown.R"),
        local = knitr::knit_global())
 ```
 
 ---
 
-# Planned updates for later SitRep versions:
+# Executive summary
 
-- *Add section on how this work should be used or interpreted*
-- *Add long-waiter graphs of those specialities not forecast to clear by April 2024.*
-- *Add figure/table numbers for simpler navigation*
-- *Add contents page for simpler navigation*
-- *Simplify graphics of graphs, alter figure legend type.*
-- *Add outpatient and diagnostic lists*
-- *Add non-elective work to produce a generalised SitRep*
+Add text here
 
 ---
 
@@ -30,7 +24,7 @@ source(here("scripts", "current", "main", "v2.2-rmarkdown.R"),
 
 # Methodology
 
-The subsequent work was produced by creating four separate forecasting algorithms, each of which produce models forecasting a horizon period of `r h` days, using the last six months of waiting list size data (start and end dates of the training period are described below). 
+The subsequent work was produced by creating four separate forecasting algorithms, each of which produce models forecasting a horizon period of `r h` days, using the last six months of waiting list size data (start and end dates of the training period are described below).
 
 Subsequently the average of these four models was calculated to produce a *combinatorial* model. Combinatorial models reliably perform better than individual forecasts in many situations, particularly for long forecast horizons.
 
@@ -38,7 +32,7 @@ The final combinatorial model was then *positively biased* to the most recent mo
 
 Overall forecasts were produced by firstly running the model individually for each speciality, and each waiting list; the outputs of these models were simulated 50 times and 80% prediction intervals calculated from these results. Lists were grouped together and then specialities were concatenated and summed to produce the overall figures. Additionally, any individual forecast that was predicted to reach a forecast list size of 0 at any horizon day was adjusted to ensure that all subsequent horizon days were given a list size of 0.
 
-An important difference between the methodology of the long waiter clearance table and the overall long waiter list forecast graph requires explanation. For the long waiter tables, the variable "Date list cleared" is the *first date the lower boundary of the 80% prediction interval touches 0 waiters*. Thus, these dates are the "best case scenario" of expected list clearance date. In contrast, the overall long waiter list graph summates the *mean* forecast position of each speciality for each date - thus, a more conservative forecast position is produced.
+For the long waiter tables, the variable "Date list cleared" is the *first date the lower boundary of the 80% prediction interval touches 0 waiters*. Thus, these dates are the "best case scenario" of expected list clearance date. In contrast, the long waiter list graphs show the median forecast position *and* the 80% prediction intervals - as such, a more conservative forecast is displayed.
 
 - AI Training period is from `r train_init` to `r train_halt`.
 - Positive weighting estimated from `r param_start` to `r train_halt`
@@ -49,11 +43,17 @@ An important difference between the methodology of the long waiter clearance tab
 
 ---
 
+# How these results should be interpreted
+
+Add text here
+
+---
+
 \newpage
 
-# Speciality: Long waiters forecast clearance dates
+# Long waiters forecast clearance dates
 - *If a speciality has "Date list cleared" field = NA then this means the list does not reach zero by the horizon end date.*
-- *See Methodology for determining the "Date list cleared" and a methodological comparison with the overall long waiters graph.*
+- *See Methodology for determining the "Date list cleared"*
 
 ``` {r lw_table_52, include = T, echo = F, warning = F, message = F}
 library(gt)
@@ -83,10 +83,13 @@ library(gt)
     table_body.hlines.color = "white",
     table.border.bottom.color = "white",
     table.border.bottom.width = px(3)
+    ) %>%
+  tab_footnote(
+    footnote = md("**Table 1**.")
   )
 lw_52
-
 ```
+
 ``` {r lw_table_65, include = T, echo = F, warning = F, message = F}
 library(gt)
   lw_65 <- readr::read_csv(here("csv", "clear_date", "current", "65wk_clear_dates.csv")) %>%
@@ -114,9 +117,11 @@ library(gt)
     table_body.hlines.color = "white",
     table.border.bottom.color = "white",
     table.border.bottom.width = px(3)
+  ) %>%
+    tab_footnote(
+      footnote = md("**Table 2**.")
   )
 lw_65
-
 ```
 
 <br>
@@ -127,7 +132,19 @@ plot_lw_2
 
 ---
 
-# Overall: Inpatient elective list forecast
+# Overall inpatient elective lists forecast
 ``` {r plot_o, echo = F, warning = F, message = F}
 plot_o
 ```
+
+---
+
+\newpage
+
+# Planned updates for later SitRep versions:
+
+- *Add section on how this work should be used or interpreted*
+- *Add figure/table numbers for simpler navigation*
+- *Add contents page for simpler navigation*
+- *Add outpatient and diagnostic lists*
+- *Add non-elective work to produce a generalised SitRep*

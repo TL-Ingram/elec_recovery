@@ -38,7 +38,7 @@ if (day(Sys.Date()) <= 3) {
   param_start = date(train_halt - 30)
   h = 365
   # speciality = c("Trauma & Orthopaedics", "Cardiology", "Oral Surgery", "Urology")
-  wl_type = c(">65 weeks", ">52 weeks")
+  wl_type = c("Planned")
   speciality <- wl_comp %>%
     distinct(speciality) %>%
     pull(speciality)

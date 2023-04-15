@@ -8,7 +8,7 @@ hist_wl <- wl_keys %>%
 af_test <- path_keys %>%
   group_by(., .model, wl, spec_desc, date) %>%
   summarise(max = quantile(.sim, 0.8),
-            mean = mean(.sim),
+            mean = quantile(.sim, 0.5),
             min = quantile(.sim, 0.2)) %>%
   ungroup(.) %>%
   select(-(spec_desc)) %>%
@@ -18,6 +18,13 @@ af_test <- path_keys %>%
             p_lower = sum(`min`)) %>%
   filter(date >= train_halt) %>%
   mutate(filter = "forecast")
+  
+# test
+af_test %>%
+  filter(., .model %in% "combination") %>%
+  ggplot(aes(x = date, y = mean, colour = spec_desc)) +
+  geom_line() +
+  theme_bw()
 
 # Row bind historical and forecast
 knitted <- rbind(hist_wl, af_test)
@@ -33,13 +40,17 @@ plot_o <- knitted %>%
             data = knitted %>% 
               filter(wl %in% c("Planned", 
                                "Active list"),
-                     .model == "paramatised")) +
+                     .model == "combination")) +
   geom_ribbon(aes(date, ymax = p_upper, ymin = p_lower), 
               fill="slategray3", alpha=.3,
-              data = knitted %>% filter(wl %in% "Planned")) +
+              data = knitted %>% 
+                filter(wl %in% "Planned",
+                       .model == "combination")) +
   geom_ribbon(aes(date, ymax = p_upper, ymin = p_lower), 
               fill="slategray3", alpha=.3,
-              data = knitted %>% filter(wl %in% "Active list")) +
+              data = knitted %>% 
+                filter(wl %in% "Active list",
+                       .model == "combination")) +
   geom_vline(data = wl_prep, xintercept = train_halt,
              linetype = "dashed", colour = "grey50",
              size = 0.5, alpha = 0.8) +
@@ -56,14 +67,19 @@ plot_o <- knitted %>%
                                 label = train_period_label),
             vjust = 1.5, size = 3, colour = "grey40") +
   scale_x_date(breaks = "3 months", date_labels = "%b-%Y") +
-  plot_defaults_two +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 30, vjust = 0.5, 
+                                   hjust=0.5),
+        legend.position = "bottom",
+        plot.caption = element_text(hjust = 0, face = "italic")) +
   scale_colour_manual(values = c("royalblue3", "mediumpurple3")) +
   labs(fill = "",
        x = "",
        y = "Patients",
-       title = "Active and Planned lists",
+       subtitle = "Active and planned lists",
        level = "",
-       colour = "")
+       colour = "",
+       caption = "Figure 2")
 
 # Save plot
 ggsave(here( "plots", "current", "overall_therapeutic", "inpatient&planned_wl.jpg"), 
