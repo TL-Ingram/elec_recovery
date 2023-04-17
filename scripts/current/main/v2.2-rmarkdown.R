@@ -38,14 +38,14 @@ if (day(Sys.Date()) <= 3) {
   param_start = date(train_halt - 30)
   h = 365
   # speciality = c("Trauma & Orthopaedics", "Cardiology", "Oral Surgery", "Urology")
-  wl_type = c("Planned")
+  # wl_type = c("Planned")
   speciality <- wl_comp %>%
     distinct(speciality) %>%
     pull(speciality)
-  # wl_type <- wl_comp %>%
-  #   distinct(wl) %>%
-  #   filter(., wl != c("Removed")) %>%
-  #   pull(wl)
+  wl_type <- wl_comp %>%
+    distinct(wl) %>%
+    filter(., wl != c("Removed")) %>%
+    pull(wl)
 }
 
 
@@ -127,7 +127,7 @@ for(i in wl_type) {
       
       # Generate future sample paths
       sim_paths <- model_frame %>%
-        generate(h = h, times = 10)
+        generate(h = h, times = 50)
       
       # Calculate specialities overall parameter position
       param_filter <- parameters %>%

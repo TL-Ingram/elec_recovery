@@ -63,11 +63,11 @@ plot_lw_2 <- plot_lw %>%
   theme_bw() +
   theme(strip.text.x = element_text(size = 6),
         strip.background = element_rect(fill="grey95"),
-        plot.caption = element_text(size = 6),
+        plot.subtitle = element_text(size = 8),
         legend.position = "bottom",
         axis.text.y = element_text(size = 5),
         axis.text.x = element_text(size = 5, angle = 90, vjust = 0.5),
-        plot.caption = element_text(hjust = 0, face = "italic")) +
+        plot.caption = element_text(size = 6, hjust = 0, face = "bold")) +
   scale_colour_manual(values = c("steelblue", "indianred4")) +
   labs(fill = "",
        x = "",

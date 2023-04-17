@@ -71,12 +71,11 @@ plot_o <- knitted %>%
   theme(axis.text.x = element_text(angle = 30, vjust = 0.5, 
                                    hjust=0.5),
         legend.position = "bottom",
-        plot.caption = element_text(hjust = 0, face = "italic")) +
+        plot.caption = element_text(hjust = 0, face = "bold")) +
   scale_colour_manual(values = c("royalblue3", "mediumpurple3")) +
   labs(fill = "",
        x = "",
        y = "Patients",
-       subtitle = "Active and planned lists",
        level = "",
        colour = "",
        caption = "Figure 2")
