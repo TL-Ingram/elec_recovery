@@ -1,6 +1,6 @@
 ---
 date: "`r Sys.Date()`"
-title: "Situation Report - Elective care recovery modelling (Inpatient)"
+title: "Situation Report - Elective care - long waiters modelling (Inpatient)"
 subtitle: "v1.0.1"
 author: "WWL DAA: Data Science"
 output: pdf_document
@@ -16,7 +16,8 @@ source(here("scripts", "current", "main", "v2.2-rmarkdown.R"),
 
 # Executive summary
 
-Add text here
+*Add text here.*
+*To be added in v1.1*
 
 ---
 
@@ -36,7 +37,7 @@ For the long waiter tables, the variable "Date list cleared" is the *first date 
 
 - AI Training period is from `r train_init` to `r train_halt`.
 - Positive weighting estimated from `r param_start` to `r train_halt`
-- Figures horizon lines depict mean predicted list size
+- Figures horizon lines depict median predicted list size
 - Figures shaded regions depict 80% prediction interval
 
 <br>
@@ -45,7 +46,8 @@ For the long waiter tables, the variable "Date list cleared" is the *first date 
 
 # How these results should be interpreted
 
-Add text here
+*Add text here.*
+*To be added in v1.1*
 
 ---
 
@@ -53,6 +55,7 @@ Add text here
 
 # Long waiters forecast clearance dates
 - *If a speciality has "Date list cleared" field = NA then this means the list does not reach zero by the horizon end date.*
+- *"Difference from [date]" field = negligible is assigned to specialities with <=10 in field "List size at [date]".*
 - *See Methodology for determining the "Date list cleared"*
 
 ``` {r lw_table_52, include = T, echo = F, warning = F, message = F}
@@ -144,7 +147,6 @@ plot_o
 # Planned updates for later SitRep versions:
 
 - *Add section on how this work should be used or interpreted*
-- *Add figure/table numbers for simpler navigation*
-- *Add contents page for simpler navigation*
+- *Improve sense and readability of methodology*
 - *Add outpatient and diagnostic lists*
-- *Add non-elective work to produce a generalised SitRep*
+- *Add the completed non-elective bed modelling demand work*

@@ -1,0 +1,152 @@
+---
+date: "`r Sys.Date()`"
+title: "Situation Report - Elective care - long waiters modelling (Inpatient)"
+subtitle: "v1.0.1"
+author: "WWL DAA: Data Science"
+output: pdf_document
+---
+
+```{r setup, include=F}
+library(here)
+source(here("scripts", "current", "main", "v2.2-rmarkdown.R"),
+       local = knitr::knit_global())
+```
+
+---
+
+# Executive summary
+
+*Add text here.*
+*To be added in v1.1*
+
+---
+
+\newpage
+
+# Methodology
+
+The subsequent work was produced by creating four separate forecasting algorithms, each of which produce models forecasting a horizon period of `r h` days, using the last six months of waiting list size data (start and end dates of the training period are described below).
+
+Subsequently the average of these four models was calculated to produce a *combinatorial* model. Combinatorial models reliably perform better than individual forecasts in many situations, particularly for long forecast horizons.
+
+The final combinatorial model was then *positively biased* to the most recent month training data. This bias is a simple weighting calculation: using the last 30 days mean values for *demand*, *capacity*, and *error (ROTT - removals over than treatment)*, the combinatorial model is adjusted to reflect these characteristics. In addition, this calculation includes an exponent function that reduces the positive bias the further into the future we are predicting, producing a more realistic forecast.
+
+Overall forecasts were produced by firstly running the model individually for each speciality, and each waiting list; the outputs of these models were simulated 50 times and 80% prediction intervals calculated from these results. Lists were grouped together and then specialities were concatenated and summed to produce the overall figures. Additionally, any individual forecast that was predicted to reach a forecast list size of 0 at any horizon day was adjusted to ensure that all subsequent horizon days were given a list size of 0.
+
+For the long waiter tables, the variable "Date list cleared" is the *first date the lower boundary of the 80% prediction interval touches 0 waiters*. Thus, these dates are the "best case scenario" of expected list clearance date. In contrast, the long waiter list graphs show the median forecast position *and* the 80% prediction intervals - as such, a more conservative forecast is displayed.
+
+- AI Training period is from `r train_init` to `r train_halt`.
+- Positive weighting estimated from `r param_start` to `r train_halt`
+- Figures horizon lines depict median predicted list size
+- Figures shaded regions depict 80% prediction interval
+
+<br>
+
+---
+
+# How these results should be interpreted
+
+*Add text here.*
+*To be added in v1.1*
+
+---
+
+\newpage
+
+# Long waiters forecast clearance dates
+- *If a speciality has "Date list cleared" field = NA then this means the list does not reach zero by the horizon end date.*
+- *"Difference from [date]" field = negligible is assigned to specialities with <=10 in field "List size at [date]".*
+- *See Methodology for determining the "Date list cleared"*
+
+``` {r lw_table_52, include = T, echo = F, warning = F, message = F}
+library(gt)
+# files <- list.files(path = here("csv", "clear_date", "current"), full.names = TRUE)
+  lw_52 <- readr::read_csv(here("csv", "clear_date", "current", "52wk_clear_dates.csv")) %>%
+    mutate("Date list cleared" = as.character(`Date list cleared`)) %>%
+    select(-List) %>%
+  gt(
+    groupname_col = "Subheading",
+    rowname_col = "Variable"
+  ) %>%
+    tab_header(title = md("Over 52 week waiters")) %>%
+  opt_table_lines(extent = "none") %>%
+  tab_style(
+    style = list(
+      cell_text(weight = "bold")
+    ),
+    locations = cells_row_groups()
+  ) %>%
+  cols_align(align = "center"
+  ) %>%
+  opt_table_lines(extent = "default") %>%
+  tab_options(
+    column_labels.border.top.color = "white",
+    column_labels.border.top.width = px(3),
+    column_labels.border.bottom.color = "black",
+    table_body.hlines.color = "white",
+    table.border.bottom.color = "white",
+    table.border.bottom.width = px(3)
+    ) %>%
+  tab_footnote(
+    footnote = md("**Table 1**.")
+  )
+lw_52
+```
+
+``` {r lw_table_65, include = T, echo = F, warning = F, message = F}
+library(gt)
+  lw_65 <- readr::read_csv(here("csv", "clear_date", "current", "65wk_clear_dates.csv")) %>%
+    mutate("Date list cleared" = as.character(`Date list cleared`)) %>%
+    select(-List) %>%
+  gt(
+    groupname_col = "Subheading",
+    rowname_col = "Variable"
+  ) %>%
+    tab_header(title = md("Over 65 week waiters")) %>%
+  opt_table_lines(extent = "none") %>%
+  tab_style(
+    style = list(
+      cell_text(weight = "bold")
+    ),
+    locations = cells_row_groups()
+  ) %>%
+  cols_align(align = "center"
+  ) %>%
+  opt_table_lines(extent = "default") %>%
+  tab_options(
+    column_labels.border.top.color = "white",
+    column_labels.border.top.width = px(3),
+    column_labels.border.bottom.color = "black",
+    table_body.hlines.color = "white",
+    table.border.bottom.color = "white",
+    table.border.bottom.width = px(3)
+  ) %>%
+    tab_footnote(
+      footnote = md("**Table 2**.")
+  )
+lw_65
+```
+
+<br>
+
+``` {r plot_lw_2, echo = F, warning = F, message = F}
+plot_lw_2
+```
+
+---
+
+# Overall inpatient elective lists forecast
+``` {r plot_o, echo = F, warning = F, message = F}
+plot_o
+```
+
+---
+
+\newpage
+
+# Planned updates for later SitRep versions:
+
+- *Add section on how this work should be used or interpreted*
+- *Improve sense and readability of methodology*
+- *Add outpatient and diagnostic lists*
+- *Add the completed non-elective bed modelling demand work*

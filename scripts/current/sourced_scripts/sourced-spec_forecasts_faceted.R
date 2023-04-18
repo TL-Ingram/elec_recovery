@@ -63,7 +63,6 @@ plot_lw_2 <- plot_lw %>%
   theme_bw() +
   theme(strip.text.x = element_text(size = 6),
         strip.background = element_rect(fill="grey95"),
-        plot.subtitle = element_text(size = 8),
         legend.position = "bottom",
         axis.text.y = element_text(size = 5),
         axis.text.x = element_text(size = 5, angle = 90, vjust = 0.5),
@@ -72,10 +71,9 @@ plot_lw_2 <- plot_lw %>%
   labs(fill = "",
        x = "",
        y = "Patients",
-       subtitle = "Long waiters forecast",
        level = "",
        colour = "",
-       caption = "Figure 1. 
+       caption = "Figure 1. Long waiters forecast. 
        Specialities shown are those that have >5 long waiters at horizon start date")
 plot_lw_2
 

@@ -34,7 +34,7 @@ lw_clear <- path_keys %>%
 lw_table <- lw_clear %>%
   left_join(lw_diff, by = c("wl", "spec_desc")) %>%
   mutate(., mean = if_else(!(is.na(clear_date)), 
-                           as.numeric(NA), 
+                           0, 
                            `mean`),
          percent_change = if_else(!(is.na(clear_date)), 
                                   as.numeric(NA), 
