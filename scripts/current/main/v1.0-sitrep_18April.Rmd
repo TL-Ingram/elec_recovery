@@ -56,7 +56,6 @@ For the long waiter tables, the variable "Date list cleared" is the *first date 
 # Long waiters forecast clearance dates
 - *If a speciality has "Date list cleared" field = NA then this means the list does not reach zero by the horizon end date.*
 - *"Difference from [date]" field = negligible is assigned to specialities with <=10 in field "List size at [date]".*
-- *See Methodology for determining the "Date list cleared"*
 
 ``` {r lw_table_52, include = T, echo = F, warning = F, message = F}
 library(gt)
