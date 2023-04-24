@@ -12,9 +12,18 @@ lw_diff <- path_keys %>%
   filter(., date == train_halt | date == (train_halt + h) -1) %>%
   group_by(wl, spec_desc) %>%
   mutate(., "percent_change" = round(-100 + (mean/lag(mean)*100),
-                                     digits = 2)) %>%
+                                     digits = 2))
+split_diff_first <- lw_diff %>%
+  filter(., date == train_halt) %>%
+  select(wl, spec_desc, mean) %>%
+  rename_with(., .fn = ~paste0("List size at ", (train_halt)), 
+              .cols = mean)
+  
+
+split_diff_last <- lw_diff %>%
   filter(., date == ((train_halt + h) -1)) %>%
-  select(wl, spec_desc, mean, percent_change)
+  left_join(split_diff_first, by = c("wl", "spec_desc")) %>%
+  select(wl, spec_desc, paste0("List size at ", (train_halt)), mean, percent_change)
 
 # Table of clearance dates for long waiters
 lw_clear <- path_keys %>%
@@ -32,7 +41,7 @@ lw_clear <- path_keys %>%
 
 # Join tables on spec_desc and make manuscript ready
 lw_table <- lw_clear %>%
-  left_join(lw_diff, by = c("wl", "spec_desc")) %>%
+  left_join(split_diff_last, by = c("wl", "spec_desc")) %>%
   mutate(., mean = if_else(!(is.na(clear_date)), 
                            0, 
                            `mean`),
@@ -47,16 +56,16 @@ lw_table <- lw_clear %>%
                                   sprintf(fmt = "%-2g %%", .x),
                                   as.character(NA))))) %>%
   mutate(across(c("percent_change"),
-                ~ if_else((`mean` <= 10),
+                ~ if_else(((`mean` <= 10) & (`mean` > 0)),
                                   "negligible",
                                   as.character(percent_change)))) %>%
   rename(., "List" = wl,
          "Speciality" = spec_desc,
          "Date list cleared" = clear_date) %>%
-  rename_with(., .fn = ~paste0("List size at ", (train_halt + h) - 1), 
+  rename_with(., .fn = ~paste0("Predicted list size in 365 days "), 
               .cols = mean) %>%
-  rename_with(., .fn = ~paste0("Difference from ", train_halt), 
-              .cols = percent_change) %>%
+  rename_with(., .fn = ~paste0("Predicted change (%) "), 
+              .cols = percent_change) #%>%
   group_by(., List) %>%
   group_split(.)
 
