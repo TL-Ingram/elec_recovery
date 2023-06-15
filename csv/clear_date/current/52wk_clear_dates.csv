@@ -1,17 +1,17 @@
-"List","Speciality","Date list cleared","List size at 2024-03-29","Difference from 2023-03-31"
-">52 weeks","ENT",NA,97,"+21.25 %"
-">52 weeks","Colorectal Surgery",NA,22,"+10 %"
-">52 weeks","General Surgery",NA,34,"+6.25 %"
-">52 weeks","Trauma & Orthopaedics",NA,248,"+2.06 %"
-">52 weeks","Gynaecology",NA,25,"+0 %"
-">52 weeks","Urology",NA,42,"+0 %"
-">52 weeks","Gastroenterology",NA,44,"-4.35 %"
-">52 weeks","Breast Surgery",2023-04-14,0,"negligible"
-">52 weeks","Cardiology",2023-05-07,0,"negligible"
-">52 weeks","Ophthalmology",2024-02-19,0,"negligible"
-">52 weeks","Oral Surgery",2023-11-19,0,"negligible"
-">52 weeks","Paediatric Dentistry",2023-04-11,0,"negligible"
-">52 weeks","Pain Management",2023-06-24,0,"negligible"
-">52 weeks","Plastic Surgery",2023-07-06,0,"negligible"
-">52 weeks","Thoracic Medicine",2023-09-06,0,"negligible"
-">52 weeks","Vascular Surgery",2023-09-12,0,"negligible"
+"List","Speciality","Date list cleared","List size at 2023-03-20","Predicted list size in 365 days ","Predicted change (%) "
+">52 weeks","ENT",NA,64,69,"+7.81 %"
+">52 weeks","Urology",NA,49,52,"+6.12 %"
+">52 weeks","Colorectal Surgery",NA,25,26,"+4 %"
+">52 weeks","Trauma & Orthopaedics",NA,253,261,"+3.16 %"
+">52 weeks","General Surgery",NA,38,36,"-5.26 %"
+">52 weeks","Gynaecology",NA,28,26,"-7.14 %"
+">52 weeks","Ophthalmology",NA,30,27,"-10 %"
+">52 weeks","Gastroenterology",NA,56,47,"-16.07 %"
+">52 weeks","Oral Surgery",NA,11,8,"negligible"
+">52 weeks","Breast Surgery",2023-04-27,2,0,NA
+">52 weeks","Cardiology",2023-03-31,2,0,NA
+">52 weeks","Paediatric Dentistry",2023-04-14,5,0,NA
+">52 weeks","Pain Management",2023-04-29,4,0,NA
+">52 weeks","Plastic Surgery",2023-10-30,16,0,NA
+">52 weeks","Thoracic Medicine",2023-07-27,5,0,NA
+">52 weeks","Vascular Surgery",2023-09-07,38,0,NA

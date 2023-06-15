@@ -13,6 +13,7 @@ lw_diff <- path_keys %>%
   group_by(wl, spec_desc) %>%
   mutate(., "percent_change" = round(-100 + (mean/lag(mean)*100),
                                      digits = 2))
+
 split_diff_first <- lw_diff %>%
   filter(., date == train_halt) %>%
   select(wl, spec_desc, mean) %>%
@@ -23,7 +24,8 @@ split_diff_first <- lw_diff %>%
 split_diff_last <- lw_diff %>%
   filter(., date == ((train_halt + h) -1)) %>%
   left_join(split_diff_first, by = c("wl", "spec_desc")) %>%
-  select(wl, spec_desc, paste0("List size at ", (train_halt)), mean, percent_change)
+  select(wl, spec_desc, paste0("List size at ", (train_halt)), 
+         mean, percent_change)
 
 # Table of clearance dates for long waiters
 lw_clear <- path_keys %>%
@@ -65,7 +67,7 @@ lw_table <- lw_clear %>%
   rename_with(., .fn = ~paste0("Predicted list size in 365 days "), 
               .cols = mean) %>%
   rename_with(., .fn = ~paste0("Predicted change (%) "), 
-              .cols = percent_change) #%>%
+              .cols = percent_change) %>%
   group_by(., List) %>%
   group_split(.)
 

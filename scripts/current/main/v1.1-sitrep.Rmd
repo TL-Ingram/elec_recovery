@@ -14,13 +14,6 @@ source(here("scripts", "current", "main", "v2.2-rmarkdown.R"),
 
 ---
 
-# Executive summary
-
-*Add text here.*
-*To be added in v1.1*
-
----
-
 \newpage
 
 # Methodology
@@ -46,8 +39,11 @@ For the long waiter tables, the variable "Date list cleared" is the *first date 
 
 # How these results should be interpreted
 
-*Add text here.*
-*To be added in v1.1*
+All forecasts include uncertainty, and long-term forecasts such as this, have significantly more. Thus, how these results are interpreted requires care. 
+
+These results project the expected 80% prediction interval, which includes the range of predicted list sizes that we are 80% confident the true future position will sit within, *so long as the variables underpinning the model remain the same as they have been over the last six months*. These results should be used as early warning signals for specialities that are seeing rising numbers of long waiters, so that root cause analysis may occur, and strategies put in place to relieve pressure. 
+
+This necessarily means that any attempt to retrospectively assess the forecasts will be challenging due to real-life variable alteration in response to the forecasts predictions. If the variables that underpin this combinatorial model are altered in the future then any historical prediction becomes less reliable; the further a speciality's variables deviate from those fed into the model, the less the prediction will accurately model reality. Yet this is the purpose of this model, it advises that alterations to speciality variables should occur, and when they do the prior predictions become obsolete. Thus, a once monthly situation report is considered necessary to account for changes in the operation of the Trust.  
 
 ---
 
@@ -56,7 +52,6 @@ For the long waiter tables, the variable "Date list cleared" is the *first date 
 # Long waiters forecast clearance dates
 - *If a speciality has "Date list cleared" field = NA then this means the list does not reach zero by the horizon end date.*
 - *"Difference from [date]" field = negligible is assigned to specialities with <=10 in field "List size at [date]".*
-- *See Methodology for determining the "Date list cleared"*
 
 ``` {r lw_table_52, include = T, echo = F, warning = F, message = F}
 library(gt)
@@ -133,12 +128,6 @@ lw_65
 plot_lw_2
 ```
 
----
-
-# Overall inpatient elective lists forecast
-``` {r plot_o, echo = F, warning = F, message = F}
-plot_o
-```
 
 ---
 
@@ -146,7 +135,14 @@ plot_o
 
 # Planned updates for later SitRep versions:
 
-- *Add section on how this work should be used or interpreted*
 - *Improve sense and readability of methodology*
 - *Add outpatient and diagnostic lists*
 - *Add the completed non-elective bed modelling demand work*
+
+---
+
+# Change log
+21/04/2023
+- *Added new column to Table 1 and 2: List size at [training halt date]. This is our list starting size.*
+- *Altered Table 1 and 2 column headers for clarity.*
+- *Added text to "How these results should be interpreted"*

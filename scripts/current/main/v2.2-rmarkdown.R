@@ -32,20 +32,21 @@ if (day(Sys.Date()) <= 3) {
 #####
 # Time period models trained on
 {
-  train_halt = (date(max(wl_comp$date))-10)
+  train_halt = date("2023-03-20")
+  # train_halt = (date(max(wl_comp$date))-10)
   train_init = date(train_halt - 180)
   train_period_label = "Training period"
   param_start = date(train_halt - 30)
   h = 365
   # speciality = c("Trauma & Orthopaedics", "Cardiology", "Oral Surgery", "Urology")
-  # wl_type = c("Planned")
+  wl_type = c(">52 weeks", ">65 weeks")
   speciality <- wl_comp %>%
     distinct(speciality) %>%
     pull(speciality)
-  wl_type <- wl_comp %>%
-    distinct(wl) %>%
-    filter(., wl != c("Removed")) %>%
-    pull(wl)
+  # wl_type <- wl_comp %>%
+  #   distinct(wl) %>%
+  #   filter(., wl != c("Removed")) %>%
+  #   pull(wl)
 }
 
 
@@ -56,6 +57,7 @@ if (day(Sys.Date()) <= 3) {
   if (day(Sys.Date()) == 1) {
   source(here("scripts", "current", "sourced_scripts", 
               "sourced-v2.2-parameter_est.R"))
+    glue("Speciality specific parameters loaded")
 } else {
   parameters <- read_rds(here("rds", "parameters", "all_spec.rds"))
   glue("Speciality specific parameters loaded")
@@ -127,7 +129,7 @@ for(i in wl_type) {
       
       # Generate future sample paths
       sim_paths <- model_frame %>%
-        generate(h = h, times = 50)
+        generate(h = h, times = 15)
       
       # Calculate specialities overall parameter position
       param_filter <- parameters %>%

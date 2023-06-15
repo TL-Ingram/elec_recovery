@@ -24,6 +24,7 @@ data_recent <- data_param %>%
 rm(wl_param)
 rm(parameters)
 list_param <- list()
+for (i in wl_type) {
   for (j in speciality){
     # Demand - last 30 days
     demand_daily <- data_recent %>%
@@ -310,6 +311,7 @@ list_param[[paste0(i, "_", j)]] <- parameters
 # All parameters bound into final data frame
 wl_param <- bind_rows(list_param) %>%
   drop_na()
+  }
 }
 
 parameters <- wl_param %>%
